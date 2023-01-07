@@ -28,7 +28,8 @@ function Addtrip() {
         
     }
     
-    const submitForm = async () => {
+    const submitForm = async (e) => {
+        e.preventDefault();
         if (!location || !startDate || !endDate) return setError('All fields are required');
         let trip = {
             location,
@@ -39,17 +40,19 @@ function Addtrip() {
         let response = await fetch('/api/trips', {
             method: 'POST',
             body: JSON.stringify(trip),
-        });
-        let data = await response.json();
-        if (data.success) {
-            // reset the fields
-            setLocation('');
-            // set the message
-            router.push('/plan');
-        } else {
-            // set the error
-            return setError(data.message);
-        }
+        })
+        let data = await response.json()
+        .then(data =>{
+            if (data.success){
+                data.id
+                router.push('/plan/plan')
+                return setMessage(data.message);
+            }
+            else {
+                // set the error
+                return setError(data.message);
+            }
+        })
     }
 
   return (
@@ -95,7 +98,15 @@ function Addtrip() {
                     >
                         Start trip
                     </button>
+                    
                 </form>
+                <button 
+                        className='text-white bg-[#FD5B61] px-9 py-3 shadow-md rounded-full 
+                        font-bold my-5 hover:shadow-xl'
+                        onClick={()=>{router.push('/plan/plan')}}
+                    >
+                        Start trip
+                </button>
             </div>
         </main>
         <Footer/>

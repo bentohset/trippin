@@ -30,11 +30,12 @@ async function addPost(req, res) {
         // connect to the database
         let { db } = await connectToDatabase();
         // add the post
-        await db.collection('trips').insertOne(JSON.parse(req.body));
+        let outcome = await db.collection('trips').insertOne(JSON.parse(req.body));
         // return a message
         return res.json({
             message: 'Post added successfully',
             success: true,
+            id: outcome.insertedId
         });
     } catch (error) {
         // return an error
