@@ -101,6 +101,17 @@ export default function Home({trips}) {
               Map checklist of visited locations
           </div>
         </section>
+
+        <section>
+          <h2 className='text-4xl font-semibold py-8'>Devs to do list</h2>
+          <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
+            <li>convert date object to string for home page</li>
+            <li>create page for [id] with features</li>
+            <li>addtrip dropdown with autocomplete location for [lt:lg] to pull through to center map</li>
+            <li>userauth with auth0 + authentication flow</li>
+            <li>restyle home page</li>
+          </ol>
+        </section>
       </main>
       <Footer/>
     </div>
