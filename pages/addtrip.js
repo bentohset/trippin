@@ -5,12 +5,16 @@ import Footer from '../components/Footer'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
-import clientPromise from '../lib/mongodb';
+import { useRouter } from 'next/router';
 
 function Addtrip() {
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
     const [location,setLocation] = useState('')
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
+
+    const router = useRouter()
 
     const selectionRange ={
         startDate: startDate,
@@ -25,24 +29,43 @@ function Addtrip() {
     }
     
     const submitForm = async () => {
-        const client = await clientPromise;
-        const db = client.db("tripplanner");
-        const trip = {
-            createdAt: Date.now(),
-            location: location,
-            startDate: startDate,
-            endDate: endDate
+        if (!location || !startDate || !endDate) return setError('All fields are required');
+        let trip = {
+            location,
+            startDate,
+            endDate,
+            createdAt: new Date().toISOString(),
         };
-        const upload = await db.collection("trips").insertOne(trip)
-        res.json(upload)
-
-
+        let response = await fetch('/api/trips', {
+            method: 'POST',
+            body: JSON.stringify(trip),
+        });
+        let data = await response.json();
+        if (data.success) {
+            // reset the fields
+            setLocation('');
+            // set the message
+            router.push('/plan');
+        } else {
+            // set the error
+            return setError(data.message);
+        }
     }
 
   return (
     <div className='bg-white'>
         <Header/>
         <main className='flex-1 flex-col items-center justify-center m-5 sm:flex'>
+            {error ? (
+                <div className='flex items-center justify-center'>
+                    <h3>{error}</h3>
+                </div>
+            ):null}
+            {message ? (
+                <div className='flex items-center justify-center'>
+                    <h3>{message}</h3>
+                </div>
+            ):null}
             <h1 className='font-bold text-4xl m-4 text-center'>New trip</h1>
             <div className=''>
                 <form className='flex flex-col' onSubmit={submitForm}>

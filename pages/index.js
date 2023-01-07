@@ -8,7 +8,6 @@ import Banner from '../components/Banner'
 import SmallCard from '../components/SmallCard'
 import Footer from '../components/Footer'
 
-import clientPromise from '../lib/mongodb';
 import { useEffect } from 'react';
 
 const DUMMY_DATA =[
@@ -108,23 +107,19 @@ export default function Home({trips}) {
   )
 }
 
-export async function getServerSideProps(context) {
-  try {
-      const client = await clientPromise;
+export async function getServerSideProps(ctx) {
+  // get the current environment
+  let dev = process.env.NODE_ENV !== 'production';
+  let { DEV_URL, PROD_URL } = process.env;
 
-      const db = client.db("tripplanner");
+  // request posts from api
+  let response = await fetch(`${dev ? DEV_URL : PROD_URL}/api/trips`);
+  // extract the data
+  let data = await response.json();
 
-      const trips = await db
-          .collection("trips")
-          .find({})
-          .sort({})
-          .limit(20)
-          .toArray();
-
-      return {
-          props: { trips: JSON.parse(JSON.stringify(trips)) },
-      };
-  } catch (e) {
-      console.error(e);
-  }
+  return {
+      props: {
+          trips: data['message'],
+      },
+  };
 }
