@@ -12,11 +12,13 @@
     "@heroicons/react": "^2.0.13",
     "@next/font": "13.1.1",
     "date-fns": "^2.29.3",
+    "mapbox-gl": "^2.12.0",
     "mongodb": "^4.13.0",
     "next": "13.1.1",
     "react": "^18.2.0",
     "react-date-range": "^1.4.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-map-gl": "^7.0.21"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
