@@ -9,6 +9,7 @@ import SmallCard from '../components/SmallCard'
 import Footer from '../components/Footer'
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 
 export default function Home({trips}) {
@@ -42,14 +43,15 @@ export default function Home({trips}) {
         
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
-    
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
             {trips.map(({_id, img, location, startDate, endDate})=>(
-              <SmallCard 
-              key={_id}
-              location={location} startDate={convertDate(startDate)} endDate={convertDate(endDate)}/>
+              <Link href={`/plan/${_id}`}>
+                <SmallCard 
+                key={_id}
+                location={location} startDate={convertDate(startDate)} endDate={convertDate(endDate)}/>
+              </Link>
             ))}
-            </div>
+          </div>
         </section>
         
         <section>

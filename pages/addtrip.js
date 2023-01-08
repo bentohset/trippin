@@ -44,8 +44,7 @@ function Addtrip() {
         let data = await response.json()
         .then(data =>{
             if (data.success){
-                data.id
-                router.push('/plan/plan')
+                router.push(`/plan/${data.id}`)
                 return setMessage(data.message);
             }
             else {

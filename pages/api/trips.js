@@ -1,6 +1,9 @@
 const { connectToDatabase } = require('../../lib/mongodb');
 const ObjectId = require('mongodb').ObjectId;
 
+//https://www.section.io/engineering-education/build-nextjs-with-mongodb-and-deploy-on-vercel/
+
+
 async function getPosts(req,res){
     try {
         // connect to the database
