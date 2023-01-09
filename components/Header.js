@@ -12,13 +12,14 @@ function Header() {
     bg-white shadow-md p-2 md:px-10'>
         <div className='relative flex-1 items-center cursor-pointer h-10 my-auto'>
             <Link href="/">
-                <Image 
+                {/* <Image 
                     src="https://github.com/twbs.png" 
                     fill
                     alt=""
                     className='object-contain object-left'
 
-                />
+                /> */}
+                <h1 className='font-bold text-2xl'>Trippin</h1>
             </Link>
         </div>
 
