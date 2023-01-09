@@ -21,7 +21,7 @@ export default function Home({trips}) {
     const day = date.slice(8,10) //8 and 9
     const monthIndex = parseInt(date.slice(5,7)); //5 and 6
     const year = date.slice(0,4)//0-3 index
-    const month = monthNames[monthIndex];
+    const month = monthNames[monthIndex-1];
     return `${day} ${month}`
   }
   
