@@ -2,6 +2,7 @@ import React from 'react'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import Map from '../../components/Map'
+import HeaderPlan from '../../components/HeaderPlan'
 import { useRouter } from 'next/router';
 import { connectToDatabase } from '../../lib/mongodb';
 import { ObjectId } from 'mongodb';
@@ -63,51 +64,56 @@ function PlanPage({trip}) {
 
   return (
     <div className='bg-white'>
-        <Header/>
-        <main className='flex relative'>
-          <div className='flex-col px-6 pt-6 w-1/2'>
-
-            <div className='bg-gray-100 w-fit rounded-xl p-4 shadow-md'>
-              <h2 className='text-4xl font-bold'>Trip to {trip.location} </h2>
-              <p className='text-gray-500 font-semibold py-2'>{convertDate(trip.startDate)} - {convertDate(trip.endDate)}</p>
-            </div>
-
-            <section className='mb-5 mt-2 flex flex-col border-b-2'>
-              <label for="notes" className='text-3xl font-bold mb-3'>Notes</label>
-              <textarea for="notes" 
-                className="p-4 mb-8 outline-none bg-gray-100 rounded-xl resize-none overflow-y-auto" 
-                rows="2" 
-                placeholder='Write anything here eg. Tips and tricks, things to note'
-              
-              />
-            </section>
-
-            <section className='mb-10 border-b-2'>
-              <h2 className='text-3xl font-bold'>Places to Visit</h2>
-            </section>
-
-            <section className='my-10'>
-              <h2 className='text-3xl font-bold mb-4'>Itinerary</h2>
-              <div className='space-y-5'>
-                {dates.map((date)=>(
-                  <div className="w-full p-2 border-b-2" key={date}>
-                    <h3 className='font-bold text-xl'>{convertDateFull(date)}</h3>
-                  </div>
-                  
-                ))}
+        <main className='flex'>
+          
+          <div className='flex-col w-1/2'>
+            <HeaderPlan/>
+            <div className='mt-14 flex-col px-6 pt-6 w-full'>
+              <div className='bg-gray-100 w-fit rounded-xl p-4 shadow-md'>
+                <h2 className='text-4xl font-bold'>Trip to {trip.location} </h2>
+                <p className='text-gray-500 font-semibold py-2'>{convertDate(trip.startDate)} - {convertDate(trip.endDate)}</p>
               </div>
-            </section>
 
-            <section className='my-10'>
-              <h2 className='text-2xl font-bold'>Budget</h2>
-              <div>
-                <div>
-                  <p>Hi</p>
+              <section className='mb-5 mt-2 flex flex-col border-b-2'>
+                <label htmlFor="notes" className='text-3xl font-bold mb-3'>Notes</label>
+                <textarea for="notes" 
+                  className="p-4 mb-8 outline-none bg-gray-100 rounded-xl resize-none overflow-y-auto" 
+                  rows="2" 
+                  placeholder='Write anything here eg. Tips and tricks, things to note'
+                
+                />
+              </section>
+
+              <section className='mb-10 border-b-2'>
+                <h2 className='text-3xl font-bold'>Places to Visit</h2>
+                <form>
+                  <SearchBox accessToken={process.env.mapbox_key}/>
+                </form>
+              </section>
+
+              <section className='my-10'>
+                <h2 className='text-3xl font-bold mb-4'>Itinerary</h2>
+                <div className='space-y-5'>
+                  {dates.map((date)=>(
+                    <div className="w-full p-2 border-b-2" key={date}>
+                      <h3 className='font-bold text-xl'>{convertDateFull(date)}</h3>
+                    </div>
+                    
+                  ))}
                 </div>
-              </div>
-            </section>
+              </section>
+
+              <section className='my-10'>
+                <h2 className='text-2xl font-bold'>Budget</h2>
+                <div>
+                  <div>
+                    <p>Hi</p>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
-          <div className='hidden xl:inline-flex xl:min-w-[600px]'>
+          <div className='fixed right-0 w-1/2 h-screen sm:hidden xl:inline-flex xl:min-w-[600px]'>
             <Map/>
           </div>
         </main>

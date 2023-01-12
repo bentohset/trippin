@@ -11,7 +11,6 @@ function Map() {
             latitude: 40,
             zoom: 3.5
         }}
-        height="100%"
     >
 
     </ReactMapGL>

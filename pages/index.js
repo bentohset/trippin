@@ -34,7 +34,7 @@ export default function Home({trips}) {
       </Head> 
       {/* Header */}
       <Header/>
-
+      <div className='m-2'></div>
 
       {/* Banner */}
       <Banner />

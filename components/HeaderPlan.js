@@ -1,16 +1,12 @@
 import React from 'react'
-import Image from 'next/image'
 import { MagnifyingGlassIcon, Bars3Icon, UserCircleIcon} from '@heroicons/react/24/solid'
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 
-function Header() {
-    const router = useRouter()
-
+function HeaderPlan() {
   return (
-    <header className='fixed top-0 z-50 grid grid-cols-3 
-    bg-white shadow-md p-2 md:px-10 w-full'>
-        <div className='items-center justify-center w-fit cursor-pointer my-auto'>
+    <nav className='fixed top-0 z-50 grid grid-cols-2 
+    bg-white shadow-md p-2 md:px-10 w-1/2' >
+        <div className='relative items-center justify-center cursor-pointer my-auto w-fit '>
             <Link href="/">
                 {/* <Image 
                     src="https://github.com/twbs.png" 
@@ -24,15 +20,6 @@ function Header() {
         </div>
 
 
-        <div className='flex items-center md:border-2 rounded-full py-2 md:shadow-sm'>
-            <input className="flex-grow pl-5 bg-transparent outline-none 
-            text-sm text-gray-600 placeholder-gray-400" 
-            type="text" 
-            placeholder='Start your search'/>
-            <MagnifyingGlassIcon className="hidden md:inline-flex h-8 
-            bg-red-400 text-white rounded-full p-2 cursor-pointer md:mx-2"/>
-        </div>
-
 
         <div className='flex items-center space-x-4 justify-end text-gray-500'>
             <div className='flex items-center space-x-2 border-2 p-2 rounded-full'>
@@ -40,8 +27,8 @@ function Header() {
                 <UserCircleIcon className='h-6'/>
             </div>
         </div>
-    </header>
+    </nav>
   )
 }
 
-export default Header
+export default HeaderPlan
