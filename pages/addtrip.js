@@ -6,6 +6,8 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { useRouter } from 'next/router';
+import { AddressAutofill, SearchBox } from '@mapbox/search-js-react';
+import { intlFormatDistance } from 'date-fns/esm';
 
 function Addtrip() {
     const [startDate, setStartDate] = useState(new Date())
@@ -13,6 +15,7 @@ function Addtrip() {
     const [location,setLocation] = useState('')
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [searchvalue, setSearchValue] = React.useState('');
 
     const router = useRouter()
 
@@ -27,6 +30,12 @@ function Addtrip() {
         setEndDate(ranges.selection.endDate)
         
     }
+    // const handleGeocode = async (searchText) => {
+    //     await fetch(`https://api.mapbox.com/search/v1/forward/${searchText}?language=en&limit=1&proximity=-121.90662,37.42827&country=US&access_token=${process.env.mapbox_key}`)
+    //     .then(response => response.json())
+    //     .then(data => console.log("test",data));
+    // }
+    // handleGeocode("india");
     
     const submitForm = async (e) => {
         e.preventDefault();
@@ -80,6 +89,18 @@ function Addtrip() {
                         className='rounded-xl p-2 px-4 mb-2 border-2 border-gray-200' 
                         placeholder='Eg. Singapore, Stockholm, Rome'
                     />
+                    {/* <AddressAutofill accessToken={process.env.mapbox_key}>
+                        <input
+                        name="address" placeholder="Address" type="text"
+                        // autoComplete=""
+                        />
+                    </AddressAutofill> */}
+                    {/* <SearchBox accessToken={process.env.mapbox_key}
+                        onChange={(e)=>{setSearchValue(e.target.value)}}
+                        value={searchvalue}
+                        className='rounded-xl p-2 px-4 mb-2 border-2 border-gray-200' 
+                    /> */}
+
                     <label htmlFor='dates' className='font-semibold my-2'>Dates</label>
                     <DateRangePicker
                         id="dates"
