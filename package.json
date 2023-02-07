@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
+    "@mapbox/search-js-react": "^1.0.0-beta.14",
     "@next/font": "13.1.1",
     "date-fns": "^2.29.3",
+    "geolib": "^3.3.3",
     "mapbox-gl": "^2.12.0",
     "mongodb": "^4.13.0",
     "next": "13.1.1",
