@@ -66,9 +66,9 @@ function Addtrip() {
   return (
     <div className='bg-white'>
         <Header/>
-        <main className='flex-1 flex-col items-center justify-center m-5 sm:flex'>
+        <main className='mt-16 flex-1 flex-col items-center justify-center m-5 sm:flex'>
             {error ? (
-                <div className='flex items-center justify-center'>
+                <div className='flex items-center justify-center mt-5 text-red-500'>
                     <h3>{error}</h3>
                 </div>
             ):null}
@@ -77,7 +77,7 @@ function Addtrip() {
                     <h3>{message}</h3>
                 </div>
             ):null}
-            <h1 className='font-bold text-4xl m-4 text-center'>New trip</h1>
+            <h1 className='font-bold text-4xl m-4 mt-8 text-center'>New trip</h1>
             <div className=''>
                 <form className='flex flex-col' onSubmit={submitForm}>
                     <label htmlFor="location" className='my-2 font-semibold'>Where to?</label>
@@ -115,21 +115,14 @@ function Addtrip() {
                         className='text-white bg-[#FD5B61] px-9 py-3 shadow-md rounded-full 
                         font-bold my-5 hover:shadow-xl'
                         type="submit"
+                        onClick={()=>{router.push('/plan/plan')}}
                     >
                         Start trip
                     </button>
                     
                 </form>
-                <button 
-                        className='text-white bg-[#FD5B61] px-9 py-3 shadow-md rounded-full 
-                        font-bold my-5 hover:shadow-xl'
-                        onClick={()=>{router.push('/plan/plan')}}
-                    >
-                        Start trip
-                </button>
             </div>
         </main>
-        <Footer/>
     </div>
   )
 }
