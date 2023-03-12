@@ -1,71 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Map from "../../components/Map";
 import HeaderPlan from "../../components/HeaderPlan";
+import VisitList from "../../components/VisitList";
+import Itinerary from "../../components/Itinerary";
 import { useRouter } from "next/router";
 import { connectToDatabase } from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
+import { convertDate, convertFullDate } from "../../utils/convertDate";
 
 function PlanPage({ trip }) {
     const router = useRouter();
     const id = router.query.id;
-
-    const convertDateFull = (date) => {
-        const monthNames = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-        ];
-        const dayNames = [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-        ];
-        const dateObject = new Date(date);
-        const dayOfWeek = dateObject.getDay();
-        const day = date.slice(8, 10); //8 and 9
-        const monthDec = date.slice(5, 7);
-        const monthIndex = parseInt(date.slice(5, 7)); //5 and 6
-        const year = date.slice(0, 4); //0-3 index
-        const month = monthNames[monthIndex - 1];
-        return `${dayNames[dayOfWeek]}, ${day} ${month}`;
-    };
-    const convertDate = (date) => {
-        const monthNames = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-        ];
-        const day = date.slice(8, 10); //8 and 9
-        const monthDec = date.slice(5, 7);
-        const monthIndex = parseInt(date.slice(5, 7)); //5 and 6
-        const year = date.slice(0, 4); //0-3 index
-        const month = monthNames[monthIndex];
-        return `${day}/${monthDec}`;
-    };
 
     const startTimestamp = new Date(trip.startDate).getTime();
     const endTimestamp = new Date(trip.endDate).getTime();
@@ -82,10 +29,18 @@ function PlanPage({ trip }) {
         return date.toISOString().split("T")[0];
     });
 
-    console.log(dates);
-    //empty fields to add
+    const [notes, setNotes] = useState('');
+    const [places, setPlaces] = useState([]);
 
-    //update trip button to mongodb
+    console.log(dates);
+
+    function handleSave() {
+
+    }
+
+    function handleListUpdate(updatedList) {
+        setPlaces(updatedList);
+    }
 
     //mapbox on the side https://docs.mapbox.com/mapbox-gl-js/guides/install/
     //sample yt vid https://www.youtube.com/watch?v=aAupumVpqcE
@@ -96,8 +51,12 @@ function PlanPage({ trip }) {
             <main className="flex">
                 
                 <div className="flex-col w-1/2">
-                    <HeaderPlan />
+                    <HeaderPlan 
+                        handleOnClick={handleSave}
+                    />
+                    
                     <div className="mt-14 flex-col px-6 pt-6 w-full">
+                    
                         <div className="bg-gray-100 w-fit rounded-xl p-4 shadow-md">
                             <h2 className="text-4xl font-bold">Trip to {trip.location} </h2>
                             <p className="text-gray-500 font-semibold py-2">
@@ -113,12 +72,14 @@ function PlanPage({ trip }) {
                                 className="p-4 mb-8 outline-none bg-gray-100 rounded-xl resize-none overflow-y-auto"
                                 rows="2"
                                 placeholder="Write anything here eg. Tips and tricks, things to note"
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
                             />
                         </section>
 
                         <section className="mb-10 border-b-2">
                             <h2 className="text-3xl font-bold">Places to Visit</h2>
-                            <form></form>
+                            <VisitList list={places} onListUpdate={handleListUpdate}/>
                         </section>
 
                         <section className="my-10">
@@ -127,8 +88,15 @@ function PlanPage({ trip }) {
                                 {dates.map((date) => (
                                     <div className="w-full p-2 border-b-2" key={date}>
                                         <h3 className="font-bold text-xl">
-                                            {convertDateFull(date)}
+                                            {convertFullDate(date)}
                                         </h3>
+                                        <input
+                                            type="number"
+                                            placeholder="Budget"
+                                        />
+                                        <h2>TODO</h2>
+                                        {/* TODO: add budget, and find out how to store all child states in parent for saving data */}
+                                        <Itinerary list={places}/>
                                     </div>
                                 ))}
                             </div>
@@ -142,7 +110,6 @@ function PlanPage({ trip }) {
                                 </div>
                             </div>
                         </section>
-                        
                     </div>
                 </div>
                 <div className="fixed right-0 w-1/2 h-screen sm:hidden xl:inline-flex xl:min-w-[600px]">

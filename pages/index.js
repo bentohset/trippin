@@ -74,7 +74,6 @@ export default function Home({trips}) {
           </ol>
         </section>
       </main>
-      <Footer/>
     </div>
   )
 }
