@@ -30,6 +30,15 @@ yarn-error.log*
 .env*.local
 /server/venv
 venv
+/backend/config/default.json
 
 # vercel
 .vercel
+
+# caches
+.eslintcache
+.eslint-loader-cache-webpack
+# Byte-compiled / optimized / DLL files
+*.__pycache__/
+*.py[cod]
+*$py.class
