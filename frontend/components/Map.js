@@ -27,7 +27,6 @@ const DUMMY = [
 
 function Map() {
   const [selected, setSelected] = useState({});
-  
   const coordinates = DUMMY.map((result)=>({
     longitude: result.long,
     latitude: result.lat,
@@ -43,7 +42,7 @@ function Map() {
   return (
     <ReactMapGL
         mapStyle='mapbox://styles/mapbox/streets-v9'
-        mapboxAccessToken={process.env.mapbox_key}
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
         style={{height: '100%', width: '100%'}}
         initialViewState={viewport}
     >
