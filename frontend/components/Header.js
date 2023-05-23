@@ -1,11 +1,12 @@
 import React from 'react'
 import Image from 'next/image'
-import { MagnifyingGlassIcon, Bars3Icon, UserCircleIcon} from '@heroicons/react/24/solid'
+import { MagnifyingGlassIcon, Bars3Icon, UserCircleIcon, } from '@heroicons/react/24/solid'
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 function Header() {
     const router = useRouter()
+
 
   return (
     <header className='fixed top-0 z-50 grid grid-cols-3 

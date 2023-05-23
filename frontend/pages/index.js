@@ -15,7 +15,7 @@ import Link from 'next/link';
 
 export default function Home({trips}) {
   const router = useRouter()
-
+  console.log(process.env)
   const convertDate = (date) => {
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -24,6 +24,10 @@ export default function Home({trips}) {
     const year = date.slice(0,4)//0-3 index
     const month = monthNames[monthIndex-1];
     return `${day} ${month}`
+  }
+  const getYear = (date) => {
+    const year = date.slice(0,4)//0-3 index
+    return year
   }
   
   
@@ -44,13 +48,18 @@ export default function Home({trips}) {
         
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
             {trips.map(({_id, img, location, startDate, endDate})=>(
-              <Link href={`/plan/${_id}`}>
+              
                 <SmallCard 
-                key={_id}
-                location={location} startDate={convertDate(startDate)} endDate={convertDate(endDate)}/>
-              </Link>
+                  key={_id}
+                  id={_id}
+                  location={location} 
+                  startDate={convertDate(startDate)} 
+                  endDate={convertDate(endDate)}
+                  year={getYear(startDate)}
+                />
+
             ))}
           </div>
         </section>
@@ -69,7 +78,7 @@ export default function Home({trips}) {
           <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
             <li>create page for [id] with features</li>
             <li>addtrip dropdown with autocomplete location for [lt:lg] to pull through to center map</li>
-            <li>userauth with auth0 + authentication flow</li>
+            <li>authentication flow</li>
             <li>restyle home page</li>
           </ol>
         </section>
@@ -79,20 +88,28 @@ export default function Home({trips}) {
 }
 
 export async function getServerSideProps(ctx) {
-  // get the current environment
-  let dev = process.env.NODE_ENV !== 'production';
-  let { DEV_URL, PROD_URL } = process.env;
+  try {
+    let dev = process.env.NODE_ENV !== 'production';
 
-  // request posts from api
-  let response = await fetch(`${dev ? DEV_URL : PROD_URL}/api/trips`);
-  // extract the data
-  let data = await response.json();
+    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips`
+    console.log(url)
 
-  return {
+    const response = await fetch(url)
+    const data = await response.json();
+
+    return {
       props: {
-          trips: data['message'],
-      },
-  };
+        trips: data,
+      }
+    }
+} catch (error) {
+    console.log(error)
+    return {
+      props: {
+        trips: [],
+      }
+    }
+}
 }
 
 const DUMMY_DATA =[
