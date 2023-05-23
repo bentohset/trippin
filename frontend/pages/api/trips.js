@@ -1,128 +1,143 @@
-const { connectToDatabase } = require('../../lib/mongodb');
-const ObjectId = require('mongodb').ObjectId;
 
 //https://www.section.io/engineering-education/build-nextjs-with-mongodb-and-deploy-on-vercel/
 
-
-async function getPosts(req,res){
-    try {
-        // connect to the database
-        let { db } = await connectToDatabase();
-        // fetch the posts
-        let trips = await db
-            .collection('trips')
-            .find({})
-            .sort({})
-            .toArray();
-        // return the posts
-        return res.json({
-            message: JSON.parse(JSON.stringify(trips)),
-            success: true,
-        });
-    } catch (error) {
-        // return the error
-        return res.json({
-            message: new Error(error).message,
-            success: false,
-        });
-    }
-}
-
-async function addPost(req, res) {
-    try {
-        // connect to the database
-        let { db } = await connectToDatabase();
-        // add the post
-        let outcome = await db.collection('trips').insertOne(JSON.parse(req.body));
-        // return a message
-        return res.json({
-            message: 'Post added successfully',
-            success: true,
-            id: outcome.insertedId
-        });
-    } catch (error) {
-        // return an error
-        return res.json({
-            message: new Error(error).message,
-            success: false,
-        });
-    }
-}
-
-async function updatePost(req, res) {
-    try {
-        // connect to the database
-        let { db } = await connectToDatabase();
-
-        // update the published status of the post
-        await db.collection('trips').updateOne(
-            {
-                _id: new ObjectId(req.body),
-            },
-            { $set: { published: true } }
-        );
-
-        // return a message
-        return res.json({
-            message: 'Post updated successfully',
-            success: true,
-        });
-    } catch (error) {
-
-        // return an error
-        return res.json({
-            message: new Error(error).message,
-            success: false,
-        });
-    }
-}
-
-async function getById(req,res){
-    try {
-        // connect to the database
-        let { db } = await connectToDatabase();
-        // fetch the posts
-        let trip = await db
-            .collection('trips')
-            .find({_id: ObjectId(req.body)})
-            .sort({})
-            .toArray();
-        // return the posts
-        return res.json({
-            message: JSON.parse(JSON.stringify(trip)),
-            success: true,
-        });
-    } catch (error) {
-        // return the error
-        return res.json({
-            message: new Error(error).message,
-            success: false,
-        });
-    }
-}
-
 export default async function handler(req, res) {
-    // switch the methods
     switch (req.method) {
         case 'GET': {
-            return getPosts(req, res);
+            console.log('get')
+            return handleGet(req, res)
         }
 
         case 'POST': {
-            return addPost(req, res);
+            return createTrip(req, res)
         }
 
-        case 'PUT': {
-            return updatePost(req, res);
+        case 'PATCH': {
+            return updateTrip(req, res)
         }
 
         case 'DELETE': {
-            return deletePost(req, res);
+            return deleteTrip(req, res)
         }
-        
-        case 'FILTERID' : {
-            return getById(req, res);
 
+        default: {
+            return res.status(400).json({ message: 'invalid route' })
         }
+    }
+}
+
+async function handleGet(req, res) {
+    const { tripId } = req.query
+
+    if (tripId) {
+        return getTripById(req, res, tripId)
+    } else {
+        return getAllTrips(req, res)
+    }
+}
+
+async function getAllTrips(req, res) {
+    try {
+        let dev = process.env.NODE_ENV !== 'production';
+        let { DEV_API_URL, PROD_API_URL} = process.env;
+
+        const url = `${dev ? DEV_API_URL : PROD_API_URL}/trips`
+
+        const response = await fetch(url)
+        const data = await response.json();
+        console.log(data)
+
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ error: error})
+    }
+}
+
+async function getTripById(req, res, tripId) {
+    try {
+        let dev = process.env.NODE_ENV !== 'production';
+        let { DEV_API_URL, PROD_API_URL} = process.env;
+
+        const url = `${dev ? DEV_API_URL : PROD_API_URL}/trips/${tripId}`
+        const response = await fetch(url)
+        const data = await response.json();
+        console.log(data)
+        if (response.status === 404) {
+            res.status(404).json({ error: 'trip not found' })
+        }
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ error: error })
+    }
+}
+
+async function createTrip(req, res) {
+    try {
+        let dev = process.env.NODE_ENV !== 'production';
+        let { DEV_API_URL, PROD_API_URL} = process.env;
+
+        const url = `${dev ? DEV_API_URL : PROD_API_URL}/trips`
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(req.body),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        const data = await response.json();
+        console.log(data)
+        res.status(200).json(data)
+    } catch (error) {
+        res.status(500).json({ error: 'server error' })
+    }
+}
+
+async function updateTrip(req, res) {
+    const { query } = req;
+    const { tripId } = query;
+    try {
+        let dev = process.env.NODE_ENV !== 'production';
+        let { DEV_API_URL, PROD_API_URL} = process.env;
+
+        const url = `${dev ? DEV_API_URL : PROD_API_URL}/trips/${tripId}`
+
+        const response = await fetch(url, {
+            method: 'PATCH',
+            body: JSON.stringify(req.body),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        const data = await response.json();
+        console.log(data)
+        res.status(200).json(data)
+    } catch (error) {
+
+        res.status(500).json({ error: 'server error' })
+    }
+}
+
+async function deleteTrip(req, res) {
+    const { query } = req;
+    const { tripId } = query;
+    try {
+        let dev = process.env.NODE_ENV !== 'production';
+        let { DEV_API_URL, PROD_API_URL} = process.env;
+
+        const url = `${dev ? DEV_API_URL : PROD_API_URL}/trips/${tripId}`
+
+        const response = await fetch(url, {
+            method: 'DELETE',
+        });
+        const data = await response.json();
+        console.log(data)
+        res.status(200).end()
+        
+    } catch (error) {
+
+        res.status(500).json({ error: 'server error' })
     }
 }
