@@ -22,7 +22,7 @@ function HeaderPlan(handleOnClick) {
         <div className='flex items-center space-x-4 justify-end'>
             <button className="text-white bg-[#FD5B61] px-6 py-2 shadow-md 
                 rounded-full font-bold hover:shadow-xl"
-                onClick={handleOnClick}
+                onClick={()=>{handleOnClick}}
             >
                 Save
             </button>
