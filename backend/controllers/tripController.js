@@ -21,7 +21,6 @@ exports.getTrips = async (req, res) => {
 
     try {
         const trips = await Trip.find();
-        console.log(trips)
 
         res.status(200).json(trips);
     } catch (error) {
@@ -33,12 +32,17 @@ exports.getTrips = async (req, res) => {
 exports.createTrip = async (req, res) => {
     const trip = req.body
 
-    const newTrip = new Trip({ ...trip })
+    const newTrip = new Trip({ 
+        location: trip.location,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+    })
 
+    console.log(newTrip)
     try {
-        await Trip.create(newTrip)
-
-        res.status(201).json(newTrip);
+        const createdTrip = await newTrip.save()
+        console.log(createdTrip)
+        res.status(201).json(createdTrip);
     } catch (error) {
         res.status(409).json({ message: error.message })
     }
@@ -54,17 +58,17 @@ exports.updateTrip = async (req, res) => {
 
     const updatedTrip = await Trip.findByIdAndUpdate(_id, {...trip, _id}, { new: true})
 
-    res.json(updatedTrip)
+    res.status(200).json(updatedTrip)
 }
 
 exports.deleteTrip = async (req, res) => {
-    const { id: _id } = req.params
+    const { id: id } = req.params
 
-    if (!mongoose.Types.ObjectId.isvalid(_id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).end('id does not exist')
     }
 
     const updatedTrip = await Trip.findByIdAndRemove(id)
 
-    res.json({ message: 'trip deleted successfully'})
+    res.status(200).json({ message: 'trip deleted successfully'})
 }

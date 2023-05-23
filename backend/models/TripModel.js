@@ -1,6 +1,12 @@
 const mongoose = require('mongoose')
 
 const TripSchema = new mongoose.Schema({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        index: true,
+        required: true,
+        auto: true,
+    },
     location: {
         type: String,
         required: true
@@ -15,7 +21,7 @@ const TripSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: new Date()
     }
 })
 

@@ -3,11 +3,15 @@ const { getTrips, getTrip, createTrip, updateTrip, deleteTrip } = require('../co
 
 const router = express.Router()
 
-// @route GET api/trips/test
+// @route GET /trips/test
 // @description tests trips route
 // @access Public
 router.get('/test', (req, res) => res.send('trips route testing'))
 
+
+// @route /trips/
+// @description 
+// @access Public
 router.get('/', getTrips)
 
 router.get('/:id', getTrip)
