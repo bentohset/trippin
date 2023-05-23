@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import Header from '../components/Header'
-import Link from 'next/link'
 import Footer from '../components/Footer'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
@@ -40,20 +39,28 @@ function Addtrip() {
     const submitForm = async (e) => {
         e.preventDefault();
         if (!location || !startDate || !endDate) return setError('All fields are required');
-        let trip = {
+        const trip = {
             location,
             startDate,
             endDate,
-            createdAt: new Date().toISOString(),
         };
-        let response = await fetch('/api/trips', {
+        let dev = process.env.NODE_ENV !== 'production';
+    
+        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips`
+        console.log(url)
+
+        let response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(trip),
+            headers: {
+                'Content-Type': 'application/json',
+            }
         })
+        console.log(response)
         let data = await response.json()
         .then(data =>{
-            if (data.success){
-                router.push(`/plan/${data.id}`)
+            if (response.status == 201){
+                router.replace(`/plan/${data._id}`)
                 return setMessage(data.message);
             }
             else {
@@ -115,7 +122,6 @@ function Addtrip() {
                         className='text-white bg-[#FD5B61] px-9 py-3 shadow-md rounded-full 
                         font-bold my-5 hover:shadow-xl'
                         type="submit"
-                        onClick={()=>{router.push('/plan/plan')}}
                     >
                         Start trip
                     </button>

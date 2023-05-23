@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Map from "../../components/Map";
@@ -6,8 +6,6 @@ import HeaderPlan from "../../components/HeaderPlan";
 import VisitList from "../../components/VisitList";
 import Itinerary from "../../components/Itinerary";
 import { useRouter } from "next/router";
-import { connectToDatabase } from "../../lib/mongodb";
-import { ObjectId } from "mongodb";
 import { convertDate, convertFullDate } from "../../utils/convertDate";
 
 function PlanPage({ trip }) {
@@ -33,7 +31,7 @@ function PlanPage({ trip }) {
     const [places, setPlaces] = useState([]);
 
     console.log(dates);
-
+    
     function handleSave() {
 
     }
@@ -52,7 +50,7 @@ function PlanPage({ trip }) {
                 
                 <div className="flex-col w-1/2">
                     <HeaderPlan 
-                        handleOnClick={handleSave}
+                        handleOnClick={()=>{handleSave}}
                     />
                     
                     <div className="mt-14 flex-col px-6 pt-6 w-full">
@@ -121,13 +119,26 @@ function PlanPage({ trip }) {
 }
 
 export async function getServerSideProps({ params }) {
-    const { db } = await connectToDatabase();
-    const data = await db.collection("trips").findOne({
-        _id: ObjectId(params.id),
-    });
+    try {
+        let dev = process.env.NODE_ENV !== 'production';
 
-    return {
-        props: { trip: JSON.parse(JSON.stringify(data)) },
-    };
+        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${params.id}`
+        const response = await fetch(url)
+        const data = await response.json();
+        console.log(data)
+
+        return {
+            props: {
+                trip: data,
+            }
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            props: {
+                trip: []
+            }
+        }
+    }
 }
 export default PlanPage;
