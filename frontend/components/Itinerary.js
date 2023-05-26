@@ -1,3 +1,6 @@
+// itinerary for each day
+// list is the total list of ALL locations for the trip across everyday
+
 import React, { useState } from 'react';
 
 function Itinerary({ list }) {

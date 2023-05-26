@@ -1,4 +1,7 @@
 export function convertDate(date) {
+    if (!date) {
+        return 'no date'
+    }
     const monthNames = [
         "Jan",
         "Feb",
@@ -22,6 +25,9 @@ export function convertDate(date) {
 }
 
 export function convertFullDate(date) {
+    if (!date) {
+        return 'no date'
+    }
     const monthNames = [
         "Jan",
         "Feb",

@@ -58,7 +58,7 @@ function Addtrip() {
         })
         console.log(response)
         let data = await response.json()
-        .then(data =>{
+        .then(data => {
             if (response.status == 201){
                 router.replace(`/plan/${data._id}`)
                 return setMessage(data.message);
