@@ -52,7 +52,7 @@ exports.updateTrip = async (req, res) => {
     const { id: _id } = req.params
     const trip = req.body
 
-    if (!mongoose.Types.ObjectId.isvalid(_id)) {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
         return res.status(404).end('id does not exist')
     }
 
@@ -71,4 +71,24 @@ exports.deleteTrip = async (req, res) => {
     const updatedTrip = await Trip.findByIdAndRemove(id)
 
     res.status(200).json({ message: 'trip deleted successfully'})
+}
+
+exports.getTripForm = async (req, res) => {
+    const { id: id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).end('id does not exist')
+    }
+
+    try {
+        const tripForm = await Trip.findById(id).select('title startDate endDate notes places itinerary totalBudget');
+
+        if (!tripForm) {
+            return res.status(404).json({ error: 'Form data not found' });
+        }
+        // console.log(tripForm.itinerary[0].locations)
+        res.status(200).json(tripForm)
+    } catch (error) {
+        res.status(500).json({ message: 'error retrieving from db' })
+    }
 }

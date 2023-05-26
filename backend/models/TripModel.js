@@ -1,12 +1,6 @@
 const mongoose = require('mongoose')
 
 const TripSchema = new mongoose.Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        index: true,
-        required: true,
-        auto: true,
-    },
     location: {
         type: String,
         required: true
@@ -18,6 +12,27 @@ const TripSchema = new mongoose.Schema({
     endDate: {
         type: Date,
         required: true
+    },
+    title: {
+        type: String,
+        default: function() {
+            return "Trip to " + this.location
+        }
+    },
+    notes: {
+        type: String
+    },
+    places: {
+        type: Array
+    },
+    itinerary: [
+        {
+            date: {type: Date},
+            locations: {type: Array},
+        }
+    ],
+    totalBudget: {
+        type: Number
     },
     createdAt: {
         type: Date,
