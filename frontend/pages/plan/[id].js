@@ -20,6 +20,7 @@ function PlanPage({ trip }) {
         itinerary: [], //array of objects for each date -> each date has places[], budget[] in ascending order
         totalBudget: 0,
     })
+    const [saving, setSaving] = useState(false)
     
     useEffect(() => {
         const fetchData = async () => {
@@ -56,9 +57,11 @@ function PlanPage({ trip }) {
         return date.toISOString().split("T")[0];
     });
 
-    const [places, setPlaces] = useState([])
     function handleListUpdate(updatedList) {
-        setPlaces(updatedList);
+        setFormData((prevData) => ({
+            ...prevData,
+            places: updatedList
+        }))
     }
 
     const handleChange = (e) => {
@@ -67,12 +70,11 @@ function PlanPage({ trip }) {
             ...prevData,
             [name]: value,
         }))
-
-        // clearTimeout(timer);
-        // setTimer(setTimeout(autoSave, 1000));    //500ms after user stops typing
     }
 
     const autoSave = async () => {
+        console.log("saving")
+        setSaving(true)
         let dev = process.env.NODE_ENV !== 'production';
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
         const response = await fetch(url, {
@@ -88,18 +90,19 @@ function PlanPage({ trip }) {
             if (response.status === 200) {
                 console.log("save success")
                 console.log(data)
+                setSaving(false)
             } else {
                 console.log(response.message)
             }
         })
-
     }
 
 
     const debouncedSaveData = useCallback(
         debounce((data) => {
+            console.log("debounce1")
             autoSave(data);
-        }, 2000), [formData]
+        }, 3000), [formData]
     );
 
     function debounce(func, delay) {
@@ -117,12 +120,14 @@ function PlanPage({ trip }) {
         return debounced
     }
     useEffect(() => {
+        // console.log("debounce3")
         return () => {
             debouncedSaveData.cancel();
         };
     }, [debouncedSaveData]);
 
     useEffect(() => {
+        // console.log("debounce2")
         debouncedSaveData(formData);
     
     }, [formData, debouncedSaveData]);
@@ -138,6 +143,7 @@ function PlanPage({ trip }) {
                 <div className="flex-col w-1/2">
                     <HeaderPlan 
                         handleOnClick={()=>{handleSave}}
+                        saving={saving}
                     />
                     
                     <div className="mt-14 flex-col px-6 pt-6 w-full">
@@ -183,13 +189,12 @@ function PlanPage({ trip }) {
                                         <h3 className="font-bold text-xl">
                                             {convertFullDate(date)}
                                         </h3>
-                                        <input
-                                            type="number"
-                                            placeholder="Budget"
-                                        />
-                                        <h2>TODO</h2>
-                                        {/* TODO: add budget, and find out how to store all child states in parent for saving data */}
-                                        {formData.places && <Itinerary list={formData.places}/>}
+                                        {formData.places && 
+                                        <Itinerary 
+                                            list={formData} dateIndex={index} 
+                                            id={id}
+                                            setSaving={setSaving}
+                                        /> }
                                     </div>
                                 ))}
                             </div>

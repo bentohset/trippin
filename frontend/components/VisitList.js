@@ -20,22 +20,23 @@ function VisitList({ list, onListUpdate }) {
             {list.map((place, index) => (
                 <li 
                     key={index}
-                    className="rounded-xl p-4 outline-none bg-gray-100 "
+                    className="rounded-xl p-4 outline-none bg-gray-100 flex flex-row justify-between"
                 >
                     {place}{' '}
                     <button onClick={()=>handleRemove(place)} className="font-semibold text-gray-400 self-end">Remove</button>
                 </li>
             ))}
         </ul>
-        <div className='flex-1'>
+        <div className='flex justify-between items-center'>
             <input
                 type="text"
                 onChange={(e)=>{setPlace(e.target.value)}}
                 value={place}
-                className="w-11/12 my-4 rounded-xl p-2 px-4 outline-none bg-gray-100"
+                placeholder='Add a location'
+                className="w-11/12 my-4 rounded-xl p-4 outline-none bg-gray-100"
                 required
             />
-            <button onClick={handleAdd} disabled={!place} className="ml-2 bg-gray-100 rounded-xl p-2 px-4 text-gray-500 place-self-end">+</button>
+            <button onClick={handleAdd} disabled={!place} className="ml-2 bg-gray-100 rounded-xl p-4 px-6 text-gray-500">+</button>
         </div>
     </div>
   )
