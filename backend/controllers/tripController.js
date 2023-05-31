@@ -10,6 +10,7 @@ exports.getTrip = async (req, res) => {
 
         res.status(200).json(trip);
     } catch (error) {
+        console.log(error)
         res.status(404).json({ message: error.message })
     }
 }
@@ -24,6 +25,7 @@ exports.getTrips = async (req, res) => {
 
         res.status(200).json(trips);
     } catch (error) {
+        console.log(error)
         res.status(404).json({ message: error.message })
     }
 }
@@ -44,6 +46,7 @@ exports.createTrip = async (req, res) => {
         console.log(createdTrip)
         res.status(201).json(createdTrip);
     } catch (error) {
+        console.log(error)
         res.status(409).json({ message: error.message })
     }
 }
@@ -89,6 +92,53 @@ exports.getTripForm = async (req, res) => {
         // console.log(tripForm.itinerary[0].locations)
         res.status(200).json(tripForm)
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: 'error retrieving from db' })
+    }
+}
+
+exports.updateItinerary = async (req, res) => {
+    const { id: id, date: date } = req.params
+    const { notes, location } = req.body
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).end('id does not exist')
+    }
+
+    try {
+        const trip = await Trip.findById(id)
+
+        if (!trip.itinerary.notes) {
+            trip.itinerary[date].notes = []
+            trip.itinerary[date].locations = []
+        }
+
+        trip.itinerary[date].notes = notes
+        trip.itinerary[date].locations = location
+
+        await trip.save();
+        res.status(200).json(trip)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'error occured'})
+    }
+}
+
+exports.getItinerary = async (req, res) => {
+    const { id: id, date: date } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).end('id does not exist')
+    }
+
+    try {
+        const trip = await Trip.findById(id)
+
+        const tripItinerary = trip.itinerary[date]
+
+        return res.status(200).json(tripItinerary)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'error occured'})
     }
 }
