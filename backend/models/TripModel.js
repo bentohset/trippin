@@ -15,6 +15,10 @@ const itinerarySubSchema = mongoose.Schema({
     notes: {
         type: Array,
         default: new Array()
+    },
+    cost: {
+        type: [Number],
+        default: new Array()
     }
 }, { _id: false });
 
@@ -57,7 +61,12 @@ const TripSchema = new mongoose.Schema({
         }
     },
     totalBudget: {
-        type: Number
+        type: Number,
+        default: 0
+    },
+    currency: {
+        type: String,
+        default: '$'
     },
     createdAt: {
         type: Date,

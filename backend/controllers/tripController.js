@@ -84,7 +84,7 @@ exports.getTripForm = async (req, res) => {
     }
 
     try {
-        const tripForm = await Trip.findById(id).select('title startDate endDate notes places itinerary totalBudget');
+        const tripForm = await Trip.findById(id).select('title startDate endDate notes places itinerary totalBudget currency');
 
         if (!tripForm) {
             return res.status(404).json({ error: 'Form data not found' });
@@ -99,8 +99,8 @@ exports.getTripForm = async (req, res) => {
 
 exports.updateItinerary = async (req, res) => {
     const { id: id, date: date } = req.params
-    const { notes, location } = req.body
-
+    const { notes, location, cost } = req.body
+    console.log(cost)
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).end('id does not exist')
     }
@@ -108,11 +108,11 @@ exports.updateItinerary = async (req, res) => {
     try {
         const trip = await Trip.findById(id)
 
-        if (!trip.itinerary.notes) {
-            trip.itinerary[date].notes = []
-            trip.itinerary[date].locations = []
-        }
+        if (!trip.itinerary[date].notes) trip.itinerary[date].notes = []
+        if (!trip.itinerary[date].locations) trip.itinerary[date].locations = []
+        if (!trip.itinerary[date].cost) trip.itinerary[date].cost = []
 
+        trip.itinerary[date].cost = cost
         trip.itinerary[date].notes = notes
         trip.itinerary[date].locations = location
 
