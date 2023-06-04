@@ -6,7 +6,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid'
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 
 
-function SmallCard({ id, img, location, startDate, endDate, year }) {
+function SmallCard({ id, img, location, startDate, endDate, year, title }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
 
@@ -57,7 +57,7 @@ function SmallCard({ id, img, location, startDate, endDate, year }) {
             </div>
             
             <div className='flex flex-col mx-2'>
-              <h2 className=''>{location}</h2>
+              <h2 className=''>{title}</h2>
               <h3 className='text-gray-500'>{startDate} - {endDate}</h3>
               <h4 className='text-gray-400'>{year}</h4>
             </div>
@@ -67,7 +67,7 @@ function SmallCard({ id, img, location, startDate, endDate, year }) {
           </div>
         </Link>
         
-          <button className='z-50 absolute right-0' onClick={()=>{handleOpen()}}>
+          <button className='z-40 absolute right-0' onClick={()=>{handleOpen()}}>
             <div className='bg-gray-300 rounded-full flex p-1 items-center justify-center hover:bg-gray-400'>
                 <XMarkIcon
                   className='h-4 text-gray-600 font-bold'

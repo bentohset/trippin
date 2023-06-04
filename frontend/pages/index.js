@@ -49,7 +49,7 @@ export default function Home({trips}) {
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
-            {trips.map(({_id, img, location, startDate, endDate})=>(
+            {trips.map(({_id, img, location, startDate, endDate, title})=>(
               
                 <SmallCard 
                   key={_id}
@@ -58,6 +58,7 @@ export default function Home({trips}) {
                   startDate={convertDate(startDate)} 
                   endDate={convertDate(endDate)}
                   year={getYear(startDate)}
+                  title={title}
                 />
 
             ))}

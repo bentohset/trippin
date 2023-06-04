@@ -5,8 +5,12 @@ import Map from "../../components/Map";
 import HeaderPlan from "../../components/HeaderPlan";
 import VisitList from "../../components/VisitList";
 import Itinerary from "../../components/Itinerary";
+import ProgressBar from "../../components/ProgressBar";
 import { useRouter } from "next/router";
 import { convertDate, convertFullDate } from "../../utils/convertDate";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+
+// TODO: add user and auth
 
 function PlanPage({ trip }) {
     const router = useRouter();
@@ -19,9 +23,15 @@ function PlanPage({ trip }) {
         places: [],
         itinerary: [], //array of objects for each date -> each date has places[], budget[] in ascending order
         totalBudget: 0,
+        currency: ''
     })
     const [saving, setSaving] = useState(false)
-    
+    const [openBudget, setOpenBudget] = useState(false)
+    const [budget, setBudget] = useState(0)
+    const [totalCost, setTotalCost] = useState(0)
+    const [currencyVal, setCurrencyVal] = useState('')
+    const [openCurrency, setOpenCurrency] = useState(false) 
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -34,14 +44,34 @@ function PlanPage({ trip }) {
                     }
                 })
                 const data = await response.json()
-                setFormData(data)
+                if (response.status == 200) {
+                    console.log("data")
+                    console.log(data)
+                    setFormData({...data})
+                    console.log(formData)
+                    setBudget(formData.totalBudget)
+                    setCurrencyVal(formData.currency)
+                }
+                
             } catch (error) {
                 console.log(error)
             }
         }
         fetchData()
-        console.log(formData)
+        console.log('fetching')
+        
     }, []);
+
+    useEffect(() => {
+        let total = 0
+        formData.itinerary.forEach((obj) => {
+            total += obj.cost.reduce((sum, value) => sum+value, 0)
+        })
+        setTotalCost(total)
+      
+    }, [formData])
+    
+
     
 
     const startTimestamp = new Date(formData.startDate).getTime();
@@ -72,6 +102,104 @@ function PlanPage({ trip }) {
         }))
     }
 
+    const handleBudgetChange = (value) => {
+        const regex = /^[0-9\b]+$/;
+        if (value === '') {
+            setBudget((prev) => prev)
+        }
+        if (regex.test(value)) {
+            setBudget(value)
+            
+        }
+    }
+
+    const handleKeyDownBudget = (event) => {
+        const key = event.key;
+        const isNumberKey = /^[0-9]$/.test(key); // Check if the key is a number (0-9)
+        const isBackspaceKey = key === 'Backspace';
+        if (isBackspaceKey && budget.length <= 1) {
+            setBudget('')
+        }
+        if (!isNumberKey && !isBackspaceKey) {
+          event.preventDefault(); // Prevent typing numbers
+        }
+    };
+
+    const handleOpen = () => {
+        setOpenBudget(true);
+    };
+    
+    const handleClose = () => {
+        setOpenBudget(false);
+        setBudget(formData.totalBudget)
+    };
+
+    const handleBudgetSave = () => {
+        if (budget === '') {
+            setBudget(1)
+            setFormData((prev) => ({
+                ...prev,
+                totalBudget: 1
+            }))
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                totalBudget: budget
+            }))
+        }
+        setOpenBudget(false);
+        autoSave()
+    }
+
+    const handleOpenCurrency = () => {
+        setCurrencyVal(formData.currency)
+        setOpenCurrency(true)
+    }
+
+    const handleCloseCurrency = () => {
+        setCurrencyVal(formData.currency)
+        setOpenCurrency(false)
+    }
+
+    const handleSaveCurrency = () => {
+        if (currencyVal === '') {
+            setFormData((prev) => ({
+                ...prev,
+                currency: '$'
+            }))
+            setCurrencyVal('$')
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                currency: currencyVal
+            }))
+        }
+        setOpenCurrency(false)
+        autoSave()
+    }
+
+    const updateTotalCost = (newVal, old) => {
+        console.log("update")
+        console.log(typeof old)
+        console.log(typeof newVal)
+        console.log(newVal)
+        console.log(totalCost)
+        let val = 0
+        if (newVal !== '') {
+            val = newVal
+        }
+        console.log(totalCost- old + val)
+        setTotalCost(totalCost - old + val);
+        
+    }
+
+    useEffect(() => {
+        console.log("total")
+        console.log(totalCost)
+    
+    }, [totalCost])
+    
+
     const autoSave = async () => {
         console.log("saving")
         setSaving(true)
@@ -100,7 +228,7 @@ function PlanPage({ trip }) {
 
     const debouncedSaveData = useCallback(
         debounce((data) => {
-            console.log("debounce1")
+            // console.log("debounce1")
             autoSave(data);
         }, 3000), [formData]
     );
@@ -149,7 +277,6 @@ function PlanPage({ trip }) {
                     <div className="mt-14 flex-col px-6 pt-6 w-full">
                     
                         <div className="bg-gray-100 w-fit rounded-xl p-4 shadow-md mb-4">
-                            {/* <h2 className="text-4xl font-bold">{formData.title} </h2> */}
                             <input
                                 className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 outline-none font-bold text-4xl resize-none overflow-y-auto"
                                 name="title"
@@ -194,6 +321,8 @@ function PlanPage({ trip }) {
                                             list={formData} dateIndex={index} 
                                             id={id}
                                             setSaving={setSaving}
+                                            currency={formData.currency}
+                                            updateTotal={updateTotalCost}
                                         /> }
                                     </div>
                                 ))}
@@ -203,9 +332,62 @@ function PlanPage({ trip }) {
                         <section className="my-10">
                             <h2 className="text-2xl font-bold">Budget</h2>
                             <div>
-                                <div>
-                                    <p>Hi</p>
+                                <div className="flex flex-col gap-2 my-2">
+                                    <p className="font-semibold text-2xl">Total Cost: {formData.currency} {totalCost}</p>
+                                    <p className="text-gray-500 text-sm">Budget: {formData.currency} {formData.totalBudget}</p>
+                                    <ProgressBar current={totalCost} max={formData.totalBudget}/>
                                 </div>
+                                <button className='bg-gray-100 mt-2 mr-1 rounded-xl p-2 px-3 font-semibold hover:bg-gray-200' onClick={()=>{handleOpen()}}>Edit Budget</button>
+                                <button className='bg-gray-100 mt-2 mx-1 rounded-xl p-2 px-3 font-semibold hover:bg-gray-200' onClick={()=>{handleOpenCurrency()}}>Change Currency</button>
+                                <Dialog open={openBudget} onClose={handleClose}>
+                                    <DialogTitle>Set Budget</DialogTitle>
+                                    <DialogContent
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                    <span className='font-semibold mr-1 inline'>$</span>
+                                    <input
+                                        className='mt-2 w-full rounded-lg py-1 px-2 text-gray-500 outline-none font-normal [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                                        type='number'
+                                        placeholder='Budget'
+                                        name="totalBudget"
+                                        value={budget}
+                                        onChange={(e) => handleBudgetChange(e.target.value)}
+                                        onKeyDown={handleKeyDownBudget}
+                                    />
+                                    </DialogContent>
+                                    <DialogActions>
+                                    <Button onClick={handleClose}>Cancel</Button>
+                                    <Button onClick={handleBudgetSave}>Save</Button>
+                                    </DialogActions>
+                                </Dialog>
+                                <Dialog open={openCurrency} onClose={handleCloseCurrency}>
+                                    <DialogTitle>Set Currency</DialogTitle>
+                                    <DialogContent
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+
+                                    <input
+                                        className='mt-2 w-full rounded-lg py-1 px-2 text-gray-500 outline-none'
+                                        type='text'
+                                        placeholder='Currency'
+                                        name="currency"
+                                        value={currencyVal}
+                                        onChange={(e) => setCurrencyVal(e.target.value.toUpperCase())}
+                                    />
+                                    </DialogContent>
+                                    <DialogActions>
+                                    <Button onClick={handleCloseCurrency}>Cancel</Button>
+                                    <Button onClick={handleSaveCurrency}>Save</Button>
+                                    </DialogActions>
+                                </Dialog>
                             </div>
                         </section>
                     </div>
@@ -225,7 +407,6 @@ export async function getServerSideProps({ params }) {
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/form/${params.id}`
         const response = await fetch(url)
         const data = await response.json();
-        console.log(data)
 
         return {
             props: {
