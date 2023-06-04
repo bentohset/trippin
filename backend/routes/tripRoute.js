@@ -1,4 +1,5 @@
 const express = require('express')
+const auth = require('../middleware/auth.js')
 const { getTrips, getTrip, createTrip, updateTrip, deleteTrip, getTripForm, updateItinerary, getItinerary } = require('../controllers/tripController.js')
 
 const router = express.Router()
@@ -8,11 +9,12 @@ const router = express.Router()
 // @access Public
 router.get('/test', (req, res) => res.send('trips route testing'))
 
-
 // @route /trips/
 // @description 
 // @access Public
 router.get('/', getTrips)
+// router.get('/', auth, getTrips)
+// use this format ^ to enable middleware protected rotues
 
 router.get('/:id', getTrip)
 

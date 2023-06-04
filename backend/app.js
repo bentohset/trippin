@@ -4,6 +4,7 @@ const cors = require('cors')
 
 //routes
 const tripRoutes = require('./routes/tripRoute')
+const userRoutes = require('./routes/userRoute')
 
 const app = express();
 
@@ -12,9 +13,8 @@ app.use(cors({ origin: true, credentials: true }));
 
 app.use(express.json());
 
-app.use('/trips', tripRoutes)
-
-
+app.use('/trips', tripRoutes);
+app.use('/users', userRoutes)
 
 const port = process.env.PORT || 8082
 
