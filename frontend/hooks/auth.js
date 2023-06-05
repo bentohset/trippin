@@ -23,11 +23,25 @@ export const AuthProvider = ({ children }) => {
 			}),
      	})
 
+		if (response.status == 401) {
+			return "Invalid password"
+		}
+		if (response.status == 404) {
+			return "User does not exist"
+		}
+		if (response.status == 500) {
+			return "Servers are down. Please try again later"
+		}
+
 		const data = await response.json()
 
-		setCookies('token', data.token);
-		setCookies('email', data.email);
-		router.replace('/')
+		console.log(data)
+		if (response.ok && data.token && data.email) {
+			setCookies('token', data.token);
+			setCookies('email', data.email);
+			return "Success"
+		}
+		
     }
 
 	const register = async ({ email, password, username }) => {
@@ -45,11 +59,24 @@ export const AuthProvider = ({ children }) => {
 				username: username
 			}),
      	})
-		const data = await response.json()
 
-		setCookies('token', data.token);
-		setCookies('email', data.result.email);
-		router.replace('/')
+		if (response.status == 401) {
+			return "Username already exists"
+		}
+		if (response.status == 402) {
+			return "Email already exists"
+		}
+		if (response.status == 500) {
+			return "Servers are down. Please try again later"
+		}
+
+		const data = await response.json()
+		if (data.token && data.result.email) {
+			setCookies('token', data.token);
+			setCookies('email', data.result.email);
+			return "Success"
+		}
+		
 	}
 
 	const logout = () => {
