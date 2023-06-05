@@ -40,10 +40,8 @@ exports.createTrip = async (req, res) => {
         endDate: trip.endDate,
     })
 
-    console.log(newTrip)
     try {
         const createdTrip = await newTrip.save()
-        console.log(createdTrip)
         res.status(201).json(createdTrip);
     } catch (error) {
         console.log(error)
@@ -100,7 +98,7 @@ exports.getTripForm = async (req, res) => {
 exports.updateItinerary = async (req, res) => {
     const { id: id, date: date } = req.params
     const { notes, location, cost } = req.body
-    console.log(cost)
+    
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).end('id does not exist')
     }

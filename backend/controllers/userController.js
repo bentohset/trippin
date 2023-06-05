@@ -19,7 +19,6 @@ exports.signUp = async (req, res) => {
     const saltRounds = 10;
     try {
         const hashed = await bcrypt.hash(password, saltRounds)
-        console.log(hashed)
 
         const newUser = new User({
             username: username,
@@ -46,7 +45,6 @@ exports.signIn = async (req, res) => {
             return res.status(404).json({ message: 'User does not exist' })
         }
         bcrypt.compare(password, user.hashedPassword, (err, result) => {
-            console.log(result)
             if (result) {
                 const payload = {
                     id: user._id,
