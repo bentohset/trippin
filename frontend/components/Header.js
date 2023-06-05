@@ -3,9 +3,11 @@ import Image from 'next/image'
 import { MagnifyingGlassIcon, Bars3Icon, UserCircleIcon, } from '@heroicons/react/24/solid'
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAuth } from '../hooks/auth';
 
 function Header() {
     const router = useRouter()
+    const { logout } = useAuth()
 
 
   return (
@@ -35,8 +37,11 @@ function Header() {
         </div>
 
 
-        <div className='flex items-center space-x-4 justify-end text-gray-500'>
-            <div className='flex items-center space-x-2 border-2 p-2 rounded-full'>
+        <div className='flex items-center space-x-4 justify-end text-gray-500 '>
+            <div className='cursor-pointer flex items-center space-x-2 border-2 p-2 rounded-full'
+                onClick={()=>logout()}
+                
+            >
                 <Bars3Icon className='h-6'/>
                 <UserCircleIcon className='h-6'/>
             </div>

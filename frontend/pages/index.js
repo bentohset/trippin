@@ -9,11 +9,12 @@ import SmallCard from '../components/SmallCard'
 import Footer from '../components/Footer'
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import ProtectedRoute from '../components/ProtectedRoute';
 import { useEffect } from 'react';
 import Link from 'next/link';
 
 
-export default function Home({trips}) {
+const Home = ({trips}) => {
   const router = useRouter()
   console.log(process.env)
   const convertDate = (date) => {
@@ -88,6 +89,8 @@ export default function Home({trips}) {
   )
 }
 
+
+
 export async function getServerSideProps(ctx) {
   try {
     let dev = process.env.NODE_ENV !== 'production';
@@ -103,15 +106,17 @@ export async function getServerSideProps(ctx) {
         trips: data,
       }
     }
-} catch (error) {
-    console.log(error)
-    return {
-      props: {
-        trips: [],
+  } catch (error) {
+      console.log(error)
+      return {
+        props: {
+          trips: [],
+        }
       }
-    }
+  }
 }
-}
+
+export default ProtectedRoute(Home);
 
 const DUMMY_DATA =[
   {

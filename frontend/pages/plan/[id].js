@@ -10,7 +10,9 @@ import { useRouter } from "next/router";
 import { convertDate, convertFullDate } from "../../utils/convertDate";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 
-// TODO: add user and auth
+// TODO: add user and auth, fix cost
+// BUG: adding second cost makes total = NaN
+// BUG: removing place from placeslist
 
 function PlanPage({ trip }) {
     const router = useRouter();
