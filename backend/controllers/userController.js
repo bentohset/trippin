@@ -7,10 +7,13 @@ const { jwtSecret, jwtExpireIn } = require('../config/default.json');
 
 exports.signUp = async (req, res) => {
     const { email, password, username } = req.body;
-    const user = await User.findOne({ email });
-    console.log(user)
-    if (user) {
-        return res.status(401).end('Email already exists')
+    const userEmail = await User.findOne({ email });
+    const userName = await User.findOne({ username })
+    if (userEmail) {
+        return res.status(402).end('Email already exists')
+    }
+    if (userName) {
+        return res.status(401).end('Username already exists')
     }
 
     const saltRounds = 10;
@@ -30,7 +33,7 @@ exports.signUp = async (req, res) => {
 
         res.status(200).json({ result, token });
     } catch (error) {
-        return res.status(401).json({ message: error.message })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -56,7 +59,7 @@ exports.signIn = async (req, res) => {
                     res.status(200).json({ email: user.email, token })
                 })
             } else {
-                res.status(401).json({ message: 'invalid credentials' })
+                res.status(401).json({ message: 'Invalid password' })
             }
         })
     } catch (error) {
