@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { MagnifyingGlassIcon, Bars3Icon, UserCircleIcon, } from '@heroicons/react/24/solid'
 import { useRouter } from 'next/router';
@@ -6,9 +6,33 @@ import Link from 'next/link';
 import { useAuth } from '../hooks/auth';
 
 function Header() {
+    const [isOpen, setIsOpen] = useState(false);
+    const modalRef = useRef(null);
     const router = useRouter()
     const { logout } = useAuth()
 
+    const toggleModal = () => {
+        setIsOpen((current) => !current);
+    };
+    const handleClickOutside = (event) => {
+        if (modalRef.current && !modalRef.current.contains(event.target)) {
+            setIsOpen(false);
+        }
+    };
+    
+    useEffect(() => {
+        console.log(isOpen)
+        if (isOpen) {
+            document.addEventListener('click', handleClickOutside);
+        } else {
+            document.removeEventListener('click', handleClickOutside);
+        }
+        
+    
+        return () => {
+          document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isOpen]);
 
   return (
     <header className='fixed top-0 z-50 grid grid-cols-3 
@@ -39,12 +63,24 @@ function Header() {
 
         <div className='flex items-center space-x-4 justify-end text-gray-500 '>
             <div className='cursor-pointer flex items-center space-x-2 border-2 p-2 rounded-full'
-                onClick={()=>logout()}
+                onClick={(event)=>{
+                    event.stopPropagation()
+                    toggleModal()
+                }}
+                
                 
             >
                 <Bars3Icon className='h-6'/>
                 <UserCircleIcon className='h-6'/>
+                {isOpen && (
+                <div ref={modalRef} className="absolute flex flex-col top-16 right-10 w-36 z-50 bg-white rounded-xl shadow-xl">
+                    <button className="text-gray-600 py-1 w-full mt-3 hover:bg-gray-100">Profile</button>
+                    <button className="text-gray-600 py-1 w-full hover:bg-gray-100">Settings</button>
+                    <button className="text-gray-600 py-1 w-full mb-3 hover:bg-gray-100" onClick={()=>{logout()}}>Logout</button>
+                </div>
+            )}
             </div>
+            
         </div>
     </header>
   )

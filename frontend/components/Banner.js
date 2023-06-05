@@ -16,7 +16,7 @@ function Banner() {
       />
       <div className='absolute top-1/2 w-full text-center'>
         <p className='text-lg font-bold sm:text-6xl text-white'>Create your trip!</p>
-        <button className='mt-6 text-purple-500 bg-white px-10 py-4 shadow-md rounded-full
+        <button className='mt-6 text-[#FD5B61] bg-white px-10 py-4 shadow-md rounded-full
         font-bold my-3 hover:shadow-xl active:scale-90 transition duration-150'
           onClick={()=>{router.push('/addtrip')}}
         >
