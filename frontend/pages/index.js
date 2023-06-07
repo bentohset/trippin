@@ -10,27 +10,57 @@ import Footer from '../components/Footer'
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import ProtectedRoute from '../components/ProtectedRoute';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '../hooks/auth';
 
 
-const Home = ({trips}) => {
-  const router = useRouter()
-  console.log(process.env)
-  const convertDate = (date) => {
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const day = date.slice(8,10) //8 and 9
-    const monthIndex = parseInt(date.slice(5,7)); //5 and 6
-    const year = date.slice(0,4)//0-3 index
-    const month = monthNames[monthIndex-1];
-    return `${day} ${month}`
-  }
-  const getYear = (date) => {
-    const year = date.slice(0,4)//0-3 index
-    return year
-  }
+const Home = () => {
+	const { cookies } = useAuth()
+	const [trips, setTrips]  = useState()
+
+	console.log(trips)
+	const router = useRouter()
+
+	const convertDate = (date) => {
+		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const day = date.slice(8,10) //8 and 9
+		const monthIndex = parseInt(date.slice(5,7)); //5 and 6
+		const year = date.slice(0,4)//0-3 index
+		const month = monthNames[monthIndex-1];
+		return `${day} ${month}`
+	}
+	const getYear = (date) => {
+		const year = date.slice(0,4)//0-3 index
+		return year
+	}
   
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				let dev = process.env.NODE_ENV !== 'production';
+
+				const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${cookies.id}`
+
+				const response = await fetch(url, {
+					method: 'GET',
+					headers: {
+					'Content-Type': 'application/json',
+					}
+				})
+
+				const data = await response.json();
+				setTrips(data)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+
+		fetchData()
+
+		
+	}, [])
   
   return (
     <div className=''>
@@ -50,7 +80,7 @@ const Home = ({trips}) => {
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
-            {trips.map(({_id, img, location, startDate, endDate, title})=>(
+            {trips && trips.map(({_id, img, location, startDate, endDate, title})=>(
               
                 <SmallCard 
                   key={_id}
@@ -78,10 +108,11 @@ const Home = ({trips}) => {
         <section>
           <h2 className='text-4xl font-semibold py-8'>Devs to do list</h2>
           <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
-            <li>create page for [id] with features</li>
             <li>addtrip dropdown with autocomplete location for [lt:lg] to pull through to center map</li>
-            <li>authentication flow</li>
-            <li>restyle home page</li>
+            <li>restyle home page banner</li>
+            <li>home page total map</li>
+            <li>profile page</li>
+            <li></li>
           </ol>
         </section>
       </main>
@@ -91,30 +122,29 @@ const Home = ({trips}) => {
 
 
 
-export async function getServerSideProps(ctx) {
-  try {
-    let dev = process.env.NODE_ENV !== 'production';
+// export async function getServerSideProps(ctx) {
+//   try {
+//     let dev = process.env.NODE_ENV !== 'production';
 
-    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips`
-    console.log(url)
+//     const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${user._id}`
 
-    const response = await fetch(url)
-    const data = await response.json();
+//     const response = await fetch(url)
+//     const data = await response.json();
 
-    return {
-      props: {
-        trips: data,
-      }
-    }
-  } catch (error) {
-      console.log(error)
-      return {
-        props: {
-          trips: [],
-        }
-      }
-  }
-}
+//     return {
+//       props: {
+//         trips: data,
+//       }
+//     }
+//   } catch (error) {
+//       console.log(error)
+//       return {
+//         props: {
+//           trips: [],
+//         }
+//       }
+//   }
+// }
 
 export default ProtectedRoute(Home);
 
