@@ -23,7 +23,7 @@ function VisitList({ list, onListUpdate }) {
                     className="rounded-xl p-4 outline-none bg-gray-100 flex flex-row justify-between"
                 >
                     {place}{' '}
-                    <button onClick={()=>handleRemove(place)} className="font-semibold text-gray-400 self-end">Remove</button>
+                    <button onClick={()=>handleRemove(place)} className="font-semibold text-gray-400 self-end hover:text-gray-600">Remove</button>
                 </li>
             ))}
         </ul>
@@ -36,7 +36,7 @@ function VisitList({ list, onListUpdate }) {
                 className="w-11/12 my-4 rounded-xl p-4 outline-none bg-gray-100"
                 required
             />
-            <button onClick={handleAdd} disabled={!place} className="ml-2 bg-gray-100 rounded-xl p-4 px-6 text-gray-500">+</button>
+            <button onClick={handleAdd} disabled={!place} className={`ml-2 bg-gray-100 rounded-xl p-4 px-6 text-gray-500 ${!place ? ``:`hover:bg-gray-200`} `}>+</button>
         </div>
     </div>
   )
