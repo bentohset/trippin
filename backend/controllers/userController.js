@@ -1,66 +1,73 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const Trip = require('../models/TripModel')
 const User = require('../models/UserModel')
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { jwtSecret, jwtExpireIn } = require('../config/default.json');
 
-exports.signUp = async (req, res) => {
-    const { email, password, username } = req.body;
-    const userEmail = await User.findOne({ email });
-    const userName = await User.findOne({ username })
-    if (userEmail) {
-        return res.status(402).end('Email already exists')
-    }
-    if (userName) {
-        return res.status(401).end('Username already exists')
-    }
+exports.getTripsByUser = async (req, res) => {
+    const { id } = req.params;
 
-    const saltRounds = 10;
     try {
-        const hashed = await bcrypt.hash(password, saltRounds)
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).end('user does not exist')
+        }
+        console.log(user)
+        const tripArray = user.trips
+        console.log(tripArray)
+        const trips = await Trip.find({ '_id': { $in: tripArray }})
+        
+        res.status(200).json(trips)
 
-        const newUser = new User({
-            username: username,
-            email: email,
-            hashedPassword: hashed
-        });
-
-        const result = await newUser.save();
-
-        const token = jwt.sign({ id: result._id, email: result.email }, jwtSecret, { expiresIn: jwtExpireIn });
-
-        res.status(200).json({ result, token });
     } catch (error) {
-        return res.status(500).json({ message: error.message })
+        console.log(error)
+        res.status(500).json({ message: error.message })
     }
 }
 
-exports.signIn = async (req, res) => {
-    const { email, password } = req.body;
+exports.createTripUser = async (req, res) => {
+    const { id } = req.params;
+    const trip = req.body
+
+    const newTrip = new Trip({
+        location: trip.location,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+    })
 
     try {
-        const user = await User.findOne({ email })
+        const user = await User.findOne({ _id: id });
         if (!user) {
-            return res.status(404).json({ message: 'User does not exist' })
+            return res.status(404).end('user does not exist')
         }
-        bcrypt.compare(password, user.hashedPassword, (err, result) => {
-            if (result) {
-                const payload = {
-                    id: user._id,
-                    email: user.email
-                };
-
-                jwt.sign(payload, jwtSecret, { expiresIn: jwtExpireIn }, (err, token) => {
-                    if (err) throw err;
-
-                    res.status(200).json({ email: user.email, token })
-                })
-            } else {
-                res.status(401).json({ message: 'Invalid password' })
-            }
-        })
+        const createdTrip = await newTrip.save()
+        
+        user.trips.push(createdTrip._id)
+        const savedUser = await user.save()
+         
+        res.status(200).json({ trip: createdTrip, user: savedUser });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: error.message })
     }
+}
+
+exports.deleteTripUser = async (req, res) => {
+    const { id: userId, trip: tripId } = req.params
+    //user id
+    try {
+        const user = await User.findOne({ _id: userId });
+        if (!user) {
+            return res.status(404).end('user does not exist')
+        }
+        //check if both id are valid
+        user.trips.splice(user.trips.findIndex((trip) => trip === tripId), 1)
+        const savedUser = await user.save()
+
+        const updatedTrip = await Trip.findByIdAndRemove(tripId)
+        res.status(200).json(savedUser)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+
 }

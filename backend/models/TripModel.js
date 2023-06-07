@@ -53,7 +53,6 @@ const TripSchema = new mongoose.Schema({
             const start = new Date(this.startDate)
             const end = new Date(this.endDate)
             const size = Math.ceil((end-start)/(1000*60*60*24))
-            console.log(size)
             return new Array(size+1).fill().map((_, index) => ({
                 dateIndex: index,
                 locations: []

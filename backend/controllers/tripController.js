@@ -34,7 +34,7 @@ exports.getTrips = async (req, res) => {
 exports.createTrip = async (req, res) => {
     const trip = req.body
 
-    const newTrip = new Trip({ 
+    const newTrip = new Trip({
         location: trip.location,
         startDate: trip.startDate,
         endDate: trip.endDate,
@@ -42,6 +42,8 @@ exports.createTrip = async (req, res) => {
 
     try {
         const createdTrip = await newTrip.save()
+        console.log(createdTrip)
+        //add createdTrip._id to user
         res.status(201).json(createdTrip);
     } catch (error) {
         console.log(error)

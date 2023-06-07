@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema({
     requestReset: {
         type: Boolean,
         default: false
+    },
+    trips: {
+        type: Array
     }
 })
 

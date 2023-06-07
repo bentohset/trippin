@@ -1,10 +1,15 @@
 const express = require('express')
-const { signIn, signUp } = require('../controllers/userController');
+const auth = require('../middleware/auth.js')
+const { getTripsByUser, createTripUser, deleteTripUser } = require('../controllers/userController.js')
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/signin', signIn);
+// @route /user/trip/:id
+router.get('/trip/:id', getTripsByUser);
 
-router.post('/signup', signUp);
+router.post('/trip/:id', createTripUser);
 
-module.exports = router;
+// @rotue /user/:trip/:id
+router.delete('/:trip/:id', deleteTripUser)
+
+module.exports = router
