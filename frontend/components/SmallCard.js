@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { useAuth } from "../hooks/auth";
 
 
 function SmallCard({ id, img, location, startDate, endDate, year, title }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
+  const { cookies } = useAuth()
 
   const refreshData = () => {
     router.replace(router.asPath, undefined,  { scroll: false });
@@ -17,7 +19,7 @@ function SmallCard({ id, img, location, startDate, endDate, year, title }) {
   const handleDelete = async () => {
     let dev = process.env.NODE_ENV !== 'production';
 
-    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
+    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
@@ -30,6 +32,7 @@ function SmallCard({ id, img, location, startDate, endDate, year, title }) {
     .then(data => {
       if (response.status === 200) {
         console.log("successfully deleted")
+        console.log(data)
         handleClose()
         refreshData()
       } else {

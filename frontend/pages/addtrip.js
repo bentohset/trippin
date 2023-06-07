@@ -7,6 +7,9 @@ import { DateRangePicker } from 'react-date-range';
 import { useRouter } from 'next/router';
 import { AddressAutofill, SearchBox } from '@mapbox/search-js-react';
 import { intlFormatDistance } from 'date-fns/esm';
+import ProtectedRoute from '../components/ProtectedRoute';
+import { useAuth } from '../hooks/auth';
+
 
 function Addtrip() {
     const [startDate, setStartDate] = useState(new Date())
@@ -16,6 +19,7 @@ function Addtrip() {
     const [message, setMessage] = useState('');
     const [searchvalue, setSearchValue] = React.useState('');
 
+    const { cookies } = useAuth()
     const router = useRouter()
 
     const selectionRange ={
@@ -46,9 +50,7 @@ function Addtrip() {
         };
         let dev = process.env.NODE_ENV !== 'production';
     
-        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips`
-        console.log(url)
-
+        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${cookies.id}`
         let response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(trip),
@@ -56,11 +58,10 @@ function Addtrip() {
                 'Content-Type': 'application/json',
             }
         })
-        console.log(response)
         let data = await response.json()
         .then(data => {
-            if (response.status == 201){
-                router.replace(`/plan/${data._id}`)
+            if (response.status == 200){
+                router.replace(`/plan/${data.trip._id}`)
                 return setMessage(data.message);
             }
             else {

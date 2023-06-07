@@ -1,16 +1,17 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router';
 
 const AuthContext = createContext();
 
+// TODO: user context is lost upon reload
 export const AuthProvider = ({ children }) => {
     const [cookies, setCookies, removeCookie] = useCookies();
     const router = useRouter()
 
     const login = async ({ email, password }) => {
       	let dev = process.env.NODE_ENV !== 'production';
-		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/users/signin`
+		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/auth/signin`
       	
 		const response = await fetch(url, {
 			method: 'POST',
@@ -34,11 +35,9 @@ export const AuthProvider = ({ children }) => {
 		}
 
 		const data = await response.json()
-
-		console.log(data)
-		if (response.ok && data.token && data.email) {
+		if (data.token && data.user._id) {
 			setCookies('token', data.token);
-			setCookies('email', data.email);
+			setCookies('id', data.user._id);
 			return "Success"
 		}
 		
@@ -46,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 
 	const register = async ({ email, password, username }) => {
 		let dev = process.env.NODE_ENV !== 'production';
-		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/users/signup`
+		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/auth/signup`
 
 		const response = await fetch(url, {
 			method: 'POST',
@@ -70,17 +69,19 @@ export const AuthProvider = ({ children }) => {
 			return "Servers are down. Please try again later"
 		}
 
-		const data = await response.json()
-		if (data.token && data.result.email) {
-			setCookies('token', data.token);
-			setCookies('email', data.result.email);
-			return "Success"
-		}
+		await response.json()
+		.then((data) => {
+			if (data.token && data.user._id) {
+				setCookies('token', data.token);
+				setCookies('id', data.user._id);
+				return "Success"
+			}
+		})
 		
 	}
 
 	const logout = () => {
-		['token', 'email'].forEach(obj => removeCookie(obj));
+		['token', 'id'].forEach(obj => removeCookie(obj));
 		router.replace('/login');
 	}
 
