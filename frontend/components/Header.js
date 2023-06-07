@@ -62,7 +62,7 @@ function Header() {
 
 
         <div className='flex items-center space-x-4 justify-end text-gray-500 '>
-            <div className='cursor-pointer flex items-center space-x-2 border-2 p-2 rounded-full'
+            <div className='cursor-pointer flex items-center space-x-2 border-2 p-2 rounded-full hover:shadow-xl focus:shadow-xl'
                 onClick={(event)=>{
                     event.stopPropagation()
                     toggleModal()
@@ -73,9 +73,8 @@ function Header() {
                 <Bars3Icon className='h-6'/>
                 <UserCircleIcon className='h-6'/>
                 {isOpen && (
-                <div ref={modalRef} className="absolute flex flex-col top-16 right-10 w-36 z-50 bg-white rounded-xl shadow-xl">
-                    <button className="text-gray-600 py-1 w-full mt-3 hover:bg-gray-100">Profile</button>
-                    <button className="text-gray-600 py-1 w-full hover:bg-gray-100">Settings</button>
+                <div ref={modalRef} className="absolute flex flex-col top-16 right-10 w-36 z-50 bg-white rounded-xl shadow-xl border-[1px]">
+                    <button className="text-gray-600 py-1 w-full mt-3 hover:bg-gray-100" onClick={()=>{router.replace('/profile')}}>Profile</button>
                     <button className="text-gray-600 py-1 w-full mb-3 hover:bg-gray-100" onClick={()=>{logout()}}>Logout</button>
                 </div>
             )}
