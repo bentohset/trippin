@@ -9,14 +9,15 @@ import ProgressBar from "../../components/ProgressBar";
 import { useRouter } from "next/router";
 import { convertDate, convertFullDate } from "../../utils/convertDate";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import TextareaAutosize from 'react-textarea-autosize';
 
-// TODO: add user and auth, fix cost
+// TODO: fix cost
 // BUG: adding second cost makes total = NaN
-// BUG: removing place from placeslist
 
-function PlanPage({ trip }) {
+function PlanPage() {
     const router = useRouter();
     const id = router.query.id;
+    console.log(id)
     const [formData, setFormData] = useState({
         title: '',
         startDate: '',
@@ -47,8 +48,6 @@ function PlanPage({ trip }) {
                 })
                 const data = await response.json()
                 if (response.status == 200) {
-                    console.log("data")
-                    console.log(data)
                     setFormData({...data})
                     console.log(formData)
                     setBudget(formData.totalBudget)
@@ -72,8 +71,6 @@ function PlanPage({ trip }) {
         setTotalCost(total)
       
     }, [formData])
-    
-
     
 
     const startTimestamp = new Date(formData.startDate).getTime();
@@ -272,15 +269,14 @@ function PlanPage({ trip }) {
                 
                 <div className="flex-col w-1/2">
                     <HeaderPlan 
-                        handleOnClick={()=>{handleSave}}
                         saving={saving}
                     />
                     
                     <div className="mt-14 flex-col px-6 pt-6 w-full">
                     
-                        <div className="bg-gray-100 w-fit rounded-xl p-4 shadow-md mb-4">
+                        <div className="bg-gray-100 w-full rounded-xl p-4 shadow-md mb-4">
                             <input
-                                className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 outline-none font-bold text-4xl resize-none overflow-y-auto"
+                                className="p-2 w-full rounded-xl bg-gray-100 hover:bg-gray-200 outline-none font-bold text-4xl resize-none overflow-y-auto"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
@@ -294,14 +290,13 @@ function PlanPage({ trip }) {
                             <label htmlFor="notes" className="text-3xl font-bold mb-3">
                                 Notes
                             </label>
-                            <textarea
-                                htmlFor="notes"
+                            <TextareaAutosize
                                 className="p-4 mb-8 outline-none bg-gray-100 rounded-xl resize-none overflow-y-auto"
-                                rows="2"
-                                placeholder="Write anything here eg. Tips and tricks, things to note"
-                                name="notes"
                                 value={formData.notes}
+                                minRows="2"
                                 onChange={handleChange}
+                                name="notes"
+                                placeholder="Write anything here eg. Tips and tricks, things to note"
                             />
                         </section>
 
