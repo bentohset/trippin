@@ -27,6 +27,38 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     }, [list.places])
 
     useEffect(() => {
+        console.log("update")
+      //if selected items not in options, remove selected
+        let index = -1
+        for (let i = 0; i < selectedItems.length; i++) {
+            if (!options.includes(selectedItems[i])) {
+                index = i
+            }
+        }
+        console.log(index)
+        if (index != -1) {
+            setNotes(prev => {
+                const newArray = [...prev]
+                newArray.splice(index, 1)
+                return newArray
+            })
+            setSelectedItems(prev => {
+                const newArray = [...prev]
+                newArray.splice(index, 1)
+                return newArray
+            })
+            setCosts(prev => {
+                const newArray = [...prev]
+                newArray.splice(index, 1)
+                return newArray
+            })
+        }
+        
+
+    }, [options])
+    
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 let dev = process.env.NODE_ENV !== 'production';
@@ -237,7 +269,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                     <div key={index} className="bg-gray-100 rounded-xl p-4 text-sm font-semibold flex-grow flex-col">
                         <div className='flex flex-row justify-between'>
                             {item.value}{' '}
-                            <button onClick={()=>handleRemove(item, index)} className="font-semibold text-gray-400 self-end">Remove</button>
+                            <button onClick={()=>handleRemove(item, index)} className="font-semibold text-gray-400 self-end hover:text-gray-600">Remove</button>
                         </div>
                    
                         <TextareaAutosize
