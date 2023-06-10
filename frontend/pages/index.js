@@ -109,9 +109,7 @@ const Home = () => {
           <h2 className='text-4xl font-semibold py-8'>Devs to do list</h2>
           <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
             <li>addtrip dropdown with autocomplete location for [lt:lg] to pull through to center map</li>
-            <li>restyle home page banner</li>
             <li>home page total map</li>
-            <li>profile page</li>
             <li></li>
           </ol>
         </section>
