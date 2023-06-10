@@ -15,7 +15,7 @@ exports.getTripsByUser = async (req, res) => {
         const tripArray = user.trips
         console.log(tripArray)
         const trips = await Trip.find({ '_id': { $in: tripArray }})
-        
+        console.log(trips)
         res.status(200).json(trips)
 
     } catch (error) {
@@ -70,4 +70,46 @@ exports.deleteTripUser = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 
+}
+
+exports.getUser = async (req, res) => {
+    const { id: userId } = req.params
+
+    try {
+        const user = await User.findOne({ _id: userId })
+        if (!user) {
+            return res.status(404).end('user does not exist')
+        }
+
+        const data = {
+            userId: user._id,
+            username: user.username,
+            email: user.email,
+            trips: user.trips
+        }
+
+        res.status(200).json(data)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
+
+exports.updateUser = async (req, res) => {
+    const { id: _id } = req.params
+    const data = req.body
+    console.log("update user")
+    console.log(data)
+    try {
+        if (!mongoose.Types.ObjectId.isValid(_id)) {
+            return res.status(404).end('id does not exist')
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(_id, {...data, _id}, {new: true})
+
+        res.status(200).json(updatedUser)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
 }
