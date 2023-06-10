@@ -1,6 +1,5 @@
 import React from 'react'
 import Image from 'next/image'
-import pic from '../public/banner.jpg'
 import { useRouter } from 'next/router'
 
 function Banner() {
