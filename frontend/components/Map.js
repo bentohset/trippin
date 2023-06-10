@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import ReactMapGL, {Marker, Popup, ScaleControl} from 'react-map-gl'
-import { getCenter } from 'geolib';
+import 'mapbox-gl/dist/mapbox-gl.css'
+
 
 const DUMMY = [
   {
@@ -25,7 +26,9 @@ const DUMMY = [
   },
 ]
 
-function Map() {
+const CENTER = [-79.152535, 40.621455]
+
+function Map({ center }) {
   const [selected, setSelected] = useState({});
   const coordinates = DUMMY.map((result)=>({
     longitude: result.long,
@@ -33,48 +36,27 @@ function Map() {
 
   }));
 
-  const center = getCenter(coordinates);
   const [viewport, setViewport] = useState({
-    longitude: center.longitude,
-    latitude: center.latitude,
-    zoom: 8,
+    longitude: center[0],
+    latitude: center[1],
+    zoom: 5,
   })
   return (
     <ReactMapGL
+        reuseMaps
         mapStyle='mapbox://styles/mapbox/streets-v9'
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
         style={{height: '100%', width: '100%'}}
         initialViewState={viewport}
     >
       {DUMMY.map(result=>(
-        <div key={result.place}>
           <Marker
+		  	key={result.place}
             longitude={result.long}
             latitude={result.lat}
             anchor='top'
           >
-            {/* <p onClick={()=>setSelected(result)} 
-              role="img"
-              
-              className='cursor-pointer text-2xl animate-bounce z-10'
-              aria-label="push-pin"
-            >
-            📌
-            </p> */}
           </Marker>
-          {selected.long === result.long ? (
-            <Popup
-              closeOnClick={true}
-              onClose={()=>setSelected({})}
-              latitude={result.lat}
-              longitude={result.long}
-            >
-              {result.place}
-            </Popup>
-          ):(
-            false
-          )}
-        </div>
       ))}
     </ReactMapGL>
   )

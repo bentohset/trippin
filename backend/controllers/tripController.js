@@ -36,6 +36,7 @@ exports.createTrip = async (req, res) => {
 
     const newTrip = new Trip({
         location: trip.location,
+        center: trip.center,
         startDate: trip.startDate,
         endDate: trip.endDate,
     })
@@ -84,7 +85,7 @@ exports.getTripForm = async (req, res) => {
     }
 
     try {
-        const tripForm = await Trip.findById(id).select('title startDate endDate notes places itinerary totalBudget currency');
+        const tripForm = await Trip.findById(id).select('title startDate endDate notes places itinerary totalBudget currency center');
 
         if (!tripForm) {
             return res.status(404).json({ error: 'Form data not found' });

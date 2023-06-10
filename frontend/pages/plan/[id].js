@@ -28,13 +28,14 @@ function PlanPage() {
         totalBudget: 0,
         currency: ''
     })
+    const [center, setCenter] = useState([])
     const [saving, setSaving] = useState(false)
     const [openBudget, setOpenBudget] = useState(false)
     const [budget, setBudget] = useState(0)
     const [totalCost, setTotalCost] = useState(0)
     const [currencyVal, setCurrencyVal] = useState('')
     const [openCurrency, setOpenCurrency] = useState(false) 
-
+    console.log("center", center)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -47,9 +48,12 @@ function PlanPage() {
                     }
                 })
                 const data = await response.json()
+                
                 if (response.status == 200) {
                     setFormData({...data})
                     console.log(formData)
+                    console.log(data)
+                    setCenter(data.center)
                     setBudget(formData.totalBudget)
                     setCurrencyVal(formData.currency)
                 }
@@ -192,11 +196,11 @@ function PlanPage() {
         
     }
 
-    useEffect(() => {
-        console.log("total")
-        console.log(totalCost)
+    // useEffect(() => {
+    //     console.log("total")
+    //     console.log(totalCost)
     
-    }, [totalCost])
+    // }, [totalCost])
     
 
     const autoSave = async () => {
@@ -390,7 +394,7 @@ function PlanPage() {
                     </div>
                 </div>
                 <div className="fixed right-0 w-1/2 h-screen sm:hidden xl:inline-flex xl:min-w-[600px]">
-                    <Map/>
+                    {center && <Map center={center}/>}
                 </div>
             </main>
         </div>

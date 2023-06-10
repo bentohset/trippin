@@ -30,6 +30,7 @@ exports.createTripUser = async (req, res) => {
 
     const newTrip = new Trip({
         location: trip.location,
+        center: trip.center,
         startDate: trip.startDate,
         endDate: trip.endDate,
     })
