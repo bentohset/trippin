@@ -6,6 +6,7 @@ const cors = require('cors')
 const tripRoutes = require('./routes/tripRoute')
 const authRoutes = require('./routes/authRoute')
 const userRoutes = require('./routes/userRoute')
+const mapRoutes = require('./routes/mapRoute')
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.use('/trips', tripRoutes);
+app.use('/map', mapRoutes);
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes)
 
