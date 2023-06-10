@@ -1,31 +1,80 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { useRouter } from 'next/router';
-import { AddressAutofill, SearchBox } from '@mapbox/search-js-react';
-import { intlFormatDistance } from 'date-fns/esm';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/auth';
 
-
+//TODO: fetch autocomplete only after a number of characters is typed to limit requests
 function Addtrip() {
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
-    const [location,setLocation] = useState('')
+    const [location,setLocation] = useState({
+        name: '',
+        text: '',
+        center: []
+    })
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
-    const [searchvalue, setSearchValue] = React.useState('');
-
+    const [autocompleteLocations, setAutocompleteLocations] = useState([]);
+    const [openAutocomplete, setOpenAutocomplete] = useState(false)
+    console.log(autocompleteLocations)
     const { cookies } = useAuth()
     const router = useRouter()
+    // const autoRef = useRef(null);
 
-    const selectionRange ={
+    const selectionRange = {
         startDate: startDate,
         endDate: endDate,
         key: 'selection'
+    }
+
+    const handleLocationChange = async (e) => {
+        const value = e.target.value
+        setLocation((prev) => ({
+            ...prev,
+            text: e.target.value
+        }))
+        let dev = process.env.NODE_ENV !== 'production';
+        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/map/cities/${value}`
+        
+        if (value.length >= 4) {
+            try {
+                console.log("fetch mapbox")
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                const data = await response.json()
+                console.log(data.features)
+                !autocompleteLocations.includes(value) &&
+                data.features &&
+                setAutocompleteLocations(
+                    data.features.map(place => {
+                        return {
+                            name: place.place_name,
+                            text: place.text,
+                            center: place.center
+                        }
+                    })
+                );
+                setOpenAutocomplete(true)
+                if (data.error) console.log(data.error)
+            } catch (error) {
+                console.log(error)
+            }
+            
+        }
+    }
+
+    const selectAutocomplete = (option) => {
+        setLocation(option)
+        setOpenAutocomplete(false)
     }
 
     const handleSelect =(ranges)=>{
@@ -33,24 +82,41 @@ function Addtrip() {
         setEndDate(ranges.selection.endDate)
         
     }
-    // const handleGeocode = async (searchText) => {
-    //     await fetch(`https://api.mapbox.com/search/v1/forward/${searchText}?language=en&limit=1&proximity=-121.90662,37.42827&country=US&access_token=${process.env.mapbox_key}`)
-    //     .then(response => response.json())
-    //     .then(data => console.log("test",data));
-    // }
-    // handleGeocode("india");
+
+    // const handleClickOutside = (event) => {
+    //     if (autoRef.current && !autoRef.current.contains(event.target)) {
+    //         console.log("outside")
+    //         setOpenAutocomplete(false);
+    //     }
+    // };
+    
+    // useEffect(() => {
+    //     if (openAutocomplete) {
+    //         document.addEventListener('mousedown', handleClickOutside);
+    //     } else {
+    //         document.removeEventListener('mousedown', handleClickOutside);
+    //     }
+        
+    
+    //     return () => {
+    //       document.removeEventListener('mousedown', handleClickOutside);
+    //     };
+    // }, [openAutocomplete]);
+
     
     const submitForm = async (e) => {
         e.preventDefault();
-        if (!location || !startDate || !endDate) return setError('All fields are required');
+        if (!location.text || !location.center || !startDate || !endDate) return setError('All fields are required');
         const trip = {
-            location,
+            location: location.text,
+            center: location.center,
             startDate,
             endDate,
         };
         let dev = process.env.NODE_ENV !== 'production';
     
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${cookies.id}`
+        
         let response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(trip),
@@ -87,16 +153,47 @@ function Addtrip() {
             ):null}
             <h1 className='font-bold text-4xl m-4 mt-8 text-center'>New trip</h1>
             <div className=''>
-                <form className='flex flex-col' onSubmit={submitForm}>
-                    <label htmlFor="location" className='my-2 font-semibold'>Where to?</label>
+                <form className='flex flex-col relative' onSubmit={submitForm}>
+                    <label htmlFor="location" className='my-2 font-semibold'>Place</label>
                     <input 
                         type="text" 
                         id="location" 
-                        value={location}
-                        onChange={(e)=>{setLocation(e.target.value)}}
-                        className='rounded-xl p-2 px-4 mb-2 border-2 border-gray-200' 
+                        value={location.text}
+                        required
+                        onChange={handleLocationChange}
+                        className='relative rounded-xl p-2 px-4 mb-2 border-2 border-gray-200' 
                         placeholder='Eg. Singapore, Stockholm, Rome'
+                        // pattern={autocompleteLocations.text.join("|")}
+                        autoComplete='off'
                     />
+                    {
+                        openAutocomplete ? 
+                        (
+                            <div id="places" className='absolute top-24 bg-white z-50 w-full border-2 rounded-xl p-2'>
+                                <ul className='w-full h-full'>
+                                    {DUMMYDATA.map((city, i) => (
+                                    <li key={i} 
+                                        className='text-gray-600 cursor-pointer p-1 hover:bg-gray-200 w-full rounded-md' 
+                                        onClick={(event)=>{
+                                            // event.stopPropagation()
+                                            selectAutocomplete(city)
+                                        }}
+                                    >
+                                        <div className='flex flex-row justify-between items-center'>
+                                            <p className='font-semibold'>{city.text}</p>
+                                            <p className='text-xs'>{city.name}</p>
+
+                                        </div>
+                                        
+                                    </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ):(
+                            <></>
+                        )
+                    }
+                    
                     {/* <AddressAutofill accessToken={process.env.mapbox_key}>
                         <input
                         name="address" placeholder="Address" type="text"
@@ -133,5 +230,48 @@ function Addtrip() {
     </div>
   )
 }
+
+const DUMMYDATA = [
+    {
+        "name": "India",
+        "text": "India",
+        "center": [
+            78.476681027237,
+            22.1991660760527
+        ],
+    },
+    {
+        "name": "Indianapolis, Indiana, United States",
+        "text": "Indianapolis",
+        "center": [
+            -86.15835,
+            39.768333
+        ],
+    },
+    {
+        "name": "Indiana, Pennsylvania, United States",
+        "text": "Indiana",
+        "center": [
+            -79.152535,
+            40.621455
+        ],
+    },
+    {
+        "name": "Indian Trail, North Carolina, United States",
+        "text": "Indian Trail",
+        "center": [
+            -80.669235,
+                35.076814
+        ],
+    },
+    {
+        "name": "Indialantic, Florida, United States",
+        "text": "Indialantic",
+        "center": [
+            -80.566247,
+            28.091493
+        ],
+    },
+]
 
 export default Addtrip
