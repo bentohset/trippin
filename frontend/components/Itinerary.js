@@ -19,8 +19,8 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     useEffect(() => {
         setOptions(list.places.map((item, index) => {
             return {
-                value: item,
-                label: item
+                value: item.address,
+                label: item.name
             }
         }))
 
@@ -268,7 +268,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                 selectedItems.map((item, index) => (
                     <div key={index} className="bg-gray-100 rounded-xl p-4 text-sm font-semibold flex-grow flex-col">
                         <div className='flex flex-row justify-between'>
-                            {item.value}{' '}
+                            <p>{item.label}</p>
                             <button onClick={()=>handleRemove(item, index)} className="font-semibold text-gray-400 self-end hover:text-gray-600">Remove</button>
                         </div>
                    

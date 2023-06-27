@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Map from "../../components/Map";
@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { convertDate, convertFullDate } from "../../utils/convertDate";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import TextareaAutosize from 'react-textarea-autosize';
+import { useLoadScript } from "@react-google-maps/api";
 
 // TODO: fix cost
 // BUG: adding second cost makes total = NaN
@@ -17,7 +18,6 @@ import TextareaAutosize from 'react-textarea-autosize';
 function PlanPage() {
     const router = useRouter();
     const id = router.query.id;
-    console.log(id)
     const [formData, setFormData] = useState({
         title: '',
         startDate: '',
@@ -26,7 +26,8 @@ function PlanPage() {
         places: [],
         itinerary: [], //array of objects for each date -> each date has places[], budget[] in ascending order
         totalBudget: 0,
-        currency: ''
+        currency: '',
+        center:[]
     })
     const [center, setCenter] = useState([])
     const [saving, setSaving] = useState(false)
@@ -35,7 +36,7 @@ function PlanPage() {
     const [totalCost, setTotalCost] = useState(0)
     const [currencyVal, setCurrencyVal] = useState('')
     const [openCurrency, setOpenCurrency] = useState(false) 
-    console.log("center", center)
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,12 +49,11 @@ function PlanPage() {
                     }
                 })
                 const data = await response.json()
-                
+                setCenter(data.center)
                 if (response.status == 200) {
                     setFormData({...data})
                     console.log(formData)
                     console.log(data)
-                    setCenter(data.center)
                     setBudget(formData.totalBudget)
                     setCurrencyVal(formData.currency)
                 }
@@ -63,7 +63,7 @@ function PlanPage() {
             }
         }
         fetchData()
-        console.log('fetching')
+        console.log('fetched')
         
     }, []);
 
@@ -263,6 +263,12 @@ function PlanPage() {
     
     }, [formData, debouncedSaveData]);
 
+    const libraries = useMemo(() => ['places'], []);
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_KEY,
+        libraries: libraries,
+    }); 
+
     //mapbox on the side https://docs.mapbox.com/mapbox-gl-js/guides/install/
     //sample yt vid https://www.youtube.com/watch?v=aAupumVpqcE
     //https://www.youtube.com/watch?v=MOqkfQIMdLE and github repo https://github.com/kukicado/building-modern-app-with-nextjs-and-mongodb
@@ -306,7 +312,7 @@ function PlanPage() {
 
                         <section className="mb-10 border-b-2">
                             <h2 className="text-3xl font-bold">Places to Visit</h2>
-                            <VisitList list={formData.places} onListUpdate={handleListUpdate}/>
+                            <VisitList list={formData.places} onListUpdate={handleListUpdate} isLoaded={isLoaded} />
                         </section>
 
                         <section className="my-10">
@@ -394,33 +400,11 @@ function PlanPage() {
                     </div>
                 </div>
                 <div className="fixed right-0 w-1/2 h-screen sm:hidden xl:inline-flex xl:min-w-[600px]">
-                    {center && <Map center={center}/>}
+                    <Map clat={formData.center[1]} clng={formData.center[0]} places={formData.places} isLoaded={isLoaded}/>
                 </div>
             </main>
         </div>
     );
 }
 
-export async function getServerSideProps({ params }) {
-    try {
-        let dev = process.env.NODE_ENV !== 'production';
-
-        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/form/${params.id}`
-        const response = await fetch(url)
-        const data = await response.json();
-
-        return {
-            props: {
-                trip: data,
-            }
-        }
-    } catch (error) {
-        console.log(error)
-        return {
-            props: {
-                trip: []
-            }
-        }
-    }
-}
 export default PlanPage;

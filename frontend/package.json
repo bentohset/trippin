@@ -9,11 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.0",
+    "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@heroicons/react": "^2.0.13",
     "@mapbox/search-js-react": "^1.0.0-beta.14",
-    "@mui/material": "^5.13.2",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.6",
+    "@react-google-maps/api": "^2.18.1",
     "date-fns": "^2.30.0",
     "dotenv-safe": "^8.2.0",
     "eslint-config-next": "^13.4.3",
@@ -27,9 +30,11 @@
     "react-cookie": "^4.1.1",
     "react-date-range": "^1.4.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.10.1",
     "react-map-gl": "^7.0.21",
     "react-select": "^5.7.3",
-    "react-textarea-autosize": "^8.4.1"
+    "react-textarea-autosize": "^8.4.1",
+    "use-places-autocomplete": "^4.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
