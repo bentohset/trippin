@@ -171,7 +171,7 @@ function Addtrip() {
                         (
                             <div id="places" className='absolute top-24 bg-white z-50 w-full border-2 rounded-xl p-2'>
                                 <ul className='w-full h-full'>
-                                    {DUMMYDATA.map((city, i) => (
+                                    {autocompleteLocations.map((city, i) => (
                                     <li key={i} 
                                         className='text-gray-600 cursor-pointer p-1 hover:bg-gray-200 w-full rounded-md' 
                                         onClick={(event)=>{
