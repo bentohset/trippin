@@ -6,56 +6,62 @@ import { useAuth } from "../hooks/auth";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 
 function ProfileTripCard({ index, length, id, img, location, startDate, endDate, year, title }) {
-    const { cookies } = useAuth()
-    const [open, setOpen] = useState(false)
-    const router = useRouter()
-    console.log(startDate, length)
+  const { cookies } = useAuth()
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+  console.log(startDate, length)
 
-    const convertDate = (date) => {
-		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-		const day = date.slice(8,10) //8 and 9
-		const monthIndex = parseInt(date.slice(5,7)); //5 and 6
-		const year = date.slice(0,4)//0-3 index
-		const month = monthNames[monthIndex-1];
-		return `${day} ${month}`
+  const convertDate = (date) => {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const day = date.slice(8,10) //8 and 9
+    const monthIndex = parseInt(date.slice(5,7)); //5 and 6
+    const year = date.slice(0,4)//0-3 index
+    const month = monthNames[monthIndex-1];
+    return `${day} ${month}`
 	}
 	const getYear = (date) => {
 		const year = date.slice(0,4)//0-3 index
 		return year
 	}
 
-    const handleDelete = async () => {
-        let dev = process.env.NODE_ENV !== 'production';
-    
-        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
-        const response = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            } 
-        })
-    
-        console.log(response)
-        const data = await response.json()
-        .then(data => {
-            if (response.status === 200) {
-                console.log("successfully deleted")
-                console.log(data)
-                handleClose()
-                refreshData()
-            } else {
-                console.log(data.message)
-            }
-        })
-    }
-    const handleOpen = () => {
-        setOpen(true)
-    }
-    
-    const handleClose = () => {
-        setOpen(false)
-    }
+  const refreshData = () => {
+    console.log('refresh')
+    router.replace(router.asPath, undefined,  { scroll: false });
+  }
+
+  const handleDelete = async () => {
+    let dev = process.env.NODE_ENV !== 'production';
+
+    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      } 
+    })
+
+    console.log(response)
+    const data = await response.json()
+    .then(data => {
+      if (response.status === 200) {
+        console.log("successfully deleted")
+        console.log(data)
+        handleClose()
+        refreshData()
+      } else {
+        console.log(data.message)
+      }
+    })
+  }
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
+  
+  const handleClose = () => {
+    setOpen(false)
+  }
 
   return (
     <div className='relative flex flex-row items-center justify-between h-full w-full'>
