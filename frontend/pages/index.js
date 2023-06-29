@@ -1,8 +1,5 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from "next/font/google"
 import { useRouter } from 'next/router';
-import styles from '../styles/Home.module.css'
 import Header from '../components/Header'
 import Banner from '../components/Banner'
 import SmallCard from '../components/SmallCard'
@@ -11,15 +8,16 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useAuth } from '../hooks/auth';
+import VisitedMap from '../components/VisitedMap';
+import VisitedStatBoard from '../components/VisitedStatBoard';
 
 
 const Home = () => {
 	const { cookies } = useAuth()
 	const [trips, setTrips]  = useState()
+  const [stats, setStats] = useState([])
 
-	console.log(trips)
 	const router = useRouter()
 
 	const convertDate = (date) => {
@@ -52,6 +50,8 @@ const Home = () => {
 
 				const data = await response.json();
 				setTrips(data)
+        setStats(getStats(data))
+
 			} catch (error) {
 				console.log(error)
 			}
@@ -61,6 +61,26 @@ const Home = () => {
 
 		
 	}, [])
+
+  const getStats = (tripArr) => {
+    const map = {}
+
+    tripArr.forEach((trip) => {
+      const countryCode = trip.countryCode || ""
+      if (countryCode !== "") {
+        map[countryCode] = (map[countryCode] || 0) + 1
+      }
+    })
+
+    let result = Object.entries(map).map(([countryCode, frequency]) => ({
+      countryCode,
+      frequency,
+    }));
+
+    const sorted = result.sort((a,b) => b.frequency - a.frequency)
+
+    return sorted
+  }
   
   return (
     <div className=''>
@@ -80,7 +100,7 @@ const Home = () => {
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
-            {trips && trips.map(({_id, img, location, startDate, endDate, title})=>(
+            {trips && trips.map(({_id, img, location, startDate, endDate, title, countryCode})=>(
               
                 <SmallCard 
                   key={_id}
@@ -90,6 +110,7 @@ const Home = () => {
                   endDate={convertDate(endDate)}
                   year={getYear(startDate)}
                   title={title}
+                  countryCode={countryCode}
                 />
 
             ))}
@@ -100,52 +121,25 @@ const Home = () => {
           <h2 className='text-4xl font-semibold py-8'>
             Visited
           </h2>
-          <div className='flex justify-center text-white items-center w-full h-[500px] bg-gray-500 mb-10'>
-              Map checklist of visited locations
+          <div className='flex flex-row justify-center text-white items-center w-full h-[500px] mb-10 relative rounded-2xl bg-[#AAD7FF] shadow-md'>
+              <VisitedMap visitedPlaces={stats}/>
+              <VisitedStatBoard visitedPlaces={stats}/>
           </div>
         </section>
 
         <section>
           <h2 className='text-4xl font-semibold py-8'>Devs to do list</h2>
           <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
-            <li>marker for specific date color-based</li>
-            <li>map zoom based on country size</li>
-            <li>home page trip picture</li>
-            <li>home page total map</li>
+            <li>fix bug: map zoom based on country size</li>
             <li>fix cost bug</li>
-            <li>profile settings</li>
+            <li>implement profile settings</li>
+            <li>fix delete refresh</li>
           </ol>
         </section>
       </main>
     </div>
   )
 }
-
-
-
-// export async function getServerSideProps(ctx) {
-//   try {
-//     let dev = process.env.NODE_ENV !== 'production';
-
-//     const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${user._id}`
-
-//     const response = await fetch(url)
-//     const data = await response.json();
-
-//     return {
-//       props: {
-//         trips: data,
-//       }
-//     }
-//   } catch (error) {
-//       console.log(error)
-//       return {
-//         props: {
-//           trips: [],
-//         }
-//       }
-//   }
-// }
 
 export default ProtectedRoute(Home);
 

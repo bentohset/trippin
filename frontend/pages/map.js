@@ -6,6 +6,7 @@ import usePlacesAutocomplete, {
     getGeocode,
     getLatLng,
   } from 'use-places-autocomplete';
+import VisitedMap from '../components/VisitedMap';
 
 const index = 0
 
@@ -28,34 +29,11 @@ function map() {
   }); 
 
   return (
-    <div className='h-screen bg-white flex justify-center items-center flex-row'>
-        <div className='w-1/2 justify-center items-cente'>
-            <p>test</p>
-            {isLoaded ? <PlacesAutocomplete
-                onAddressSelect={(address) => {
-                    getGeocode({ address: address }).then((results) => {
-                      const { lat, lng } = getLatLng(results[0]);
-                      console.log(lat, lng)
-                      const newObj = {
-                        lat: lat,
-                        lng: lng,
-                        address: address,
-                        day: index
-                      }
-                      console.log(newObj)
-                      setPlaces(prev => 
-                        [...prev, newObj]
-                      )
-                    });
-               
-                }}
-            /> : null}
-        </div>
-        <div className='fixed right-0 w-1/2 h-screen '>
-            <Map clat={clat} clng={clng} places={places} isLoaded={isLoaded}/>
-        </div>
-        
-        
+    <div className='h-screen bg-white justify-center items-center'>
+      <div className='h-1/2 w-1/2 border-black border-[1px] rounded-xl bg-gray-200'>
+        <VisitedMap/>
+      </div>
+      
     </div>
   )
 }
