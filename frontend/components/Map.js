@@ -13,7 +13,7 @@ function Map({ clat, clng, places, isLoaded }) {
 
   useEffect(() => {
     
-    if (places.length !== 0) {
+    if (isLoaded && places.length !== 0) {
       const bounds = new window.google.maps.LatLngBounds();
       places?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
       bounds.extend({ lat: clat, lng: clng })
