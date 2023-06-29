@@ -107,7 +107,7 @@ function VisitList({ list, onListUpdate, isLoaded }) {
                         lng: lng,
                         address: address,
                         name: name,
-                        day: 1
+                        day: 0
                     }
                     handleAddAutoSelect(newObj)
 

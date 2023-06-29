@@ -15,7 +15,8 @@ function Addtrip() {
     const [location,setLocation] = useState({
         name: '',
         text: '',
-        center: []
+        center: [],
+        countryCode: ''
     })
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -31,6 +32,8 @@ function Addtrip() {
         endDate: endDate,
         key: 'selection'
     }
+
+    
 
     const handleLocationChange = async (e) => {
         const value = e.target.value
@@ -55,11 +58,22 @@ function Addtrip() {
                 !autocompleteLocations.includes(value) &&
                 data.features &&
                 setAutocompleteLocations(
+                    //if place_type includes country, then .properties.short_code
+                    //else if place_type includes region/place, then .context[0].short_code
+                    //else fallback
                     data.features.map(place => {
+                        let code = ''
+                        if (place.place_type.includes("country")) {
+                            code = place.properties.short_code
+                        } else if (place.place_type.includes("region") || place.place_type.includes("place")) {
+                            code = place.context[0].short_code
+                        }
+
                         return {
                             name: place.place_name,
                             text: place.text,
-                            center: place.center
+                            center: place.center,
+                            countryCode: code
                         }
                     })
                 );
@@ -73,6 +87,7 @@ function Addtrip() {
     }
 
     const selectAutocomplete = (option) => {
+        console.log(option.countryCode)
         setLocation(option)
         setOpenAutocomplete(false)
     }
@@ -110,9 +125,11 @@ function Addtrip() {
         const trip = {
             location: location.text,
             center: location.center,
+            countryCode: location.countryCode,
             startDate,
             endDate,
         };
+        console.log(trip)
         let dev = process.env.NODE_ENV !== 'production';
     
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${cookies.id}`

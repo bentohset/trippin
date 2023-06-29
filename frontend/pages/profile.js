@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Header from "../components/Header";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import ProfileTripCard from "../components/ProfileTripCard";
+import Footer from "../components/Footer";
 
 const profile = ({ initialUser }) => {
     const { cookies } = useAuth()
@@ -122,6 +123,8 @@ const profile = ({ initialUser }) => {
 					<p>You have no trips. Add a trip!</p>
 				)}
             </section>
+
+			
 			<Dialog open={openEdit} onClose={handleCloseEdit}>
 				<DialogTitle>Edit Profile</DialogTitle>
 				<DialogContent
