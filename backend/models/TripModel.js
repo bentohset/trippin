@@ -27,6 +27,10 @@ const TripSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    countryCode: {
+        type: String,
+        required: true
+    },
     center: {
         type: Array,
         required: true
