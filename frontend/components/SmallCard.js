@@ -7,7 +7,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { useAuth } from "../hooks/auth";
 
 
-function SmallCard({ id, img, location, startDate, endDate, year, title }) {
+function SmallCard({ id, img, location, startDate, endDate, year, title, countryCode }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const { cookies } = useAuth()
@@ -27,7 +27,6 @@ function SmallCard({ id, img, location, startDate, endDate, year, title }) {
       } 
     })
 
-    console.log(response)
     const data = await response.json()
     .then(data => {
       if (response.status === 200) {
@@ -49,14 +48,32 @@ function SmallCard({ id, img, location, startDate, endDate, year, title }) {
     setOpen(false)
   }
 
+  const getFlagEmoji = (code) => {
+    if (!code) {
+      const fallback = [0x1F3F4, 0x200D, 0x2620, 0xFE0F]
+      return String.fromCodePoint(...fallback)
+    }
+    const codePoints = code
+    .toUpperCase()
+    .split('')
+    .map(char =>  127397 + char.charCodeAt());
+
+    return String.fromCodePoint(...codePoints);
+  }
+
   return (
     <div className='relative flex flex-row items-center justify-between'>
       <div className="flex w-full flex-row relative justify-between items-center m-2 mt-5 rounded-xl cursor-pointer
        hover:rounded-xl hover:scale-105 transition-transform duration-200 ease-out">
         <Link href={`/plan/${id}`} className='rounded-xl flex-1'>
           <div className='flex flex-row items-center w-full'>
-            <div className='relative h-20 w-20 ml-2'>
-              <Image src={img} alt="" fill className="rounded-lg"/>
+            <div className='flex relative h-20 w-20 ml-2 justify-center items-center content-center place-items-center'>
+              {/* <Image src={img} alt="" fill className="rounded-lg"/> */}
+              {countryCode ? (
+                <p className="text-7xl text-center">{getFlagEmoji(countryCode)}</p>
+              ):(
+                  <p className="text-7xl text-center whitespace-pre self-center">{getFlagEmoji(countryCode)}</p>
+              )}
             </div>
             
             <div className='flex flex-col mx-2'>
