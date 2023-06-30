@@ -277,7 +277,7 @@ function PlanPage() {
         <div className="bg-white">
             <main className="flex">
                 
-                <div className="flex-col w-1/2">
+                <div className="flex-col sm:w-1/2 w-full">
                     <HeaderPlan 
                         saving={saving}
                     />
@@ -399,7 +399,7 @@ function PlanPage() {
                         </section>
                     </div>
                 </div>
-                <div className="fixed right-0 w-1/2 h-screen sm:hidden xl:inline-flex xl:min-w-[600px]">
+                <div className="fixed right-0 w-1/2 h-screen xl:inline-flex xl:min-w-[600px] invisible sm:visible">
                     <Map clat={formData.center[1]} clng={formData.center[0]} places={formData.places} isLoaded={isLoaded}/>
                 </div>
             </main>
