@@ -47,7 +47,6 @@ function VisitedMap({ visitedPlaces }) {
                 width: "70%", 
                 height: "100%"
             }}
-            class
         >
             <ZoomableGroup
                 center={[0, 40]} zoom={1}

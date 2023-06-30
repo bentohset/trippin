@@ -69,15 +69,13 @@ export const AuthProvider = ({ children }) => {
 			return "Servers are down. Please try again later"
 		}
 
-		await response.json()
-		.then((data) => {
-			if (data.token && data.user._id) {
-				setCookies('token', data.token);
-				setCookies('id', data.user._id);
-				return "Success"
-			}
-		})
-		
+		const data = await response.json()
+
+		if (data.token && data.user._id) {
+			setCookies('token', data.token);
+			setCookies('id', data.user._id);
+			return "Success"
+		}
 	}
 
 	const logout = () => {

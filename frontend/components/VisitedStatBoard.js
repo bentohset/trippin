@@ -24,7 +24,7 @@ function VisitedStatBoard({ visitedPlaces }) {
                     const name = getName(place.countryCode)
 
                     return (
-                        <p><span className='font-semibold'>{index+1}.</span> {name} <span className='font-bold text-black'>{place.frequency}</span></p>
+                        <p key={index}><span className='font-semibold'>{index+1}.</span> {name} <span className='font-bold text-black'>{place.frequency}</span></p>
                     )
                 })):(
                     <div className='flex flex-col justify-center items-center'>
