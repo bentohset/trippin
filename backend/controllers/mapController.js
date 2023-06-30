@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const { mapboxKey } = require('../config/default.json');
+require('dotenv').config();
+
+const mapboxKey = process.env.MAPBOX_KEY
 
 exports.autoCompleteCity = async (req, res) => {
     const { text } = req.params

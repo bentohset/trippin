@@ -3,7 +3,10 @@ const mongoose = require('mongoose')
 const User = require('../models/UserModel')
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { jwtSecret, jwtExpireIn } = require('../config/default.json');
+require('dotenv').config();
+
+const jwtSecret = process.env.JWT_SECRET
+const jwtExpireIn = process.env.JWT_EXPIRY
 
 exports.signUp = async (req, res) => {
     const { email, password, username } = req.body;
@@ -28,7 +31,6 @@ exports.signUp = async (req, res) => {
 
         const result = await newUser.save();
         const token = jwt.sign({ id: result._id, email: result.email }, jwtSecret, { expiresIn: jwtExpireIn });
-
         res.status(200).json({ user: result, token });
     } catch (error) {
         return res.status(500).json({ message: error.message })
