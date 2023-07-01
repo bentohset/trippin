@@ -36,8 +36,8 @@ export const AuthProvider = ({ children }) => {
 
 		const data = await response.json()
 		if (data.token && data.user._id) {
-			setCookies('token', data.token);
-			setCookies('id', data.user._id);
+			setCookies('token', data.token, { path: '/', sameSite: 'none', secure: true});
+			setCookies('id', data.user._id, { path: '/', sameSite: 'none', secure: true});
 			return "Success"
 		}
 		
@@ -72,8 +72,8 @@ export const AuthProvider = ({ children }) => {
 		const data = await response.json()
 
 		if (data.token && data.user._id) {
-			setCookies('token', data.token);
-			setCookies('id', data.user._id);
+			setCookies('token', data.token, { path: '/', sameSite: 'none', secure: true});
+			setCookies('id', data.user._id, { path: '/', sameSite: 'none', secure: true});
 			return "Success"
 		}
 	}
