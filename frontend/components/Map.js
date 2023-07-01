@@ -6,15 +6,15 @@ function Map({ clat, clng, places, isLoaded }) {
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [infoWindowData, setInfoWindowData] = useState();
-
+  
   useEffect(() => {
     // resets bounds when new places are added
-    if (isLoaded && places.length !== 0) {
+    if (mapRef && isLoaded && places.length !== 0) {
       const bounds = new window.google.maps.LatLngBounds();
       places?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
       bounds.extend({ lat: clat, lng: clng })
       mapRef.fitBounds(bounds);
-      const zoom = mapRef.getZoom();
+      const zoom = mapRef?.getZoom();
       const maxZoom = 14; // Set your desired maximum zoom level
       if (zoom > maxZoom) {
         mapRef.setZoom(maxZoom);
