@@ -172,10 +172,8 @@ const Home = () => {
         <section>
           <h2 className='text-4xl font-semibold py-8'>Devs to do list</h2>
           <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
-            <li>fix bug: map zoom based on country size</li>
             <li>fix cost bug</li>
             <li>implement profile settings</li>
-            <li>fix delete refresh</li>
           </ol>
         </section>
       </main>
@@ -184,54 +182,3 @@ const Home = () => {
 }
 
 export default ProtectedRoute(Home);
-
-const DUMMY_DATA =[
-  {
-    img:"https://github.com/twbs.png",
-    location: "London",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "New York",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "Johor Bahru",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "Singapore",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "Australia",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "China",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "Scotland",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-  {
-    img:"https://github.com/twbs.png",
-    location: "Denmark",
-    startDate:"3 Jan",
-    endDate:"5 Jan",
-  },
-]
