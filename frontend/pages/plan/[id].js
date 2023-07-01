@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Map from "../../components/Map";
 import HeaderPlan from "../../components/HeaderPlan";
@@ -11,9 +10,6 @@ import { convertDate, convertFullDate } from "../../utils/convertDate";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import TextareaAutosize from 'react-textarea-autosize';
 import { useLoadScript } from "@react-google-maps/api";
-
-// TODO: fix cost
-// BUG: adding second cost makes total = NaN
 
 function PlanPage() {
     const router = useRouter();
@@ -52,8 +48,6 @@ function PlanPage() {
                 setCenter(data.center)
                 if (response.status == 200) {
                     setFormData({...data})
-                    console.log(formData)
-                    console.log(data)
                     setBudget(formData.totalBudget)
                     setCurrencyVal(formData.currency)
                 }
@@ -63,7 +57,6 @@ function PlanPage() {
             }
         }
         fetchData()
-        console.log('fetched')
         
     }, []);
 
@@ -182,29 +175,16 @@ function PlanPage() {
     }
 
     const updateTotalCost = (newVal, old) => {
-        console.log("update")
-        console.log(typeof old)
-        console.log(typeof newVal)
-        console.log(newVal)
-        console.log(totalCost)
         let val = 0
         if (newVal !== '') {
             val = newVal
         }
-        console.log(totalCost- old + val)
         setTotalCost(totalCost - old + val);
         
     }
-
-    // useEffect(() => {
-    //     console.log("total")
-    //     console.log(totalCost)
-    
-    // }, [totalCost])
     
 
     const autoSave = async () => {
-        console.log("saving")
         setSaving(true)
         let dev = process.env.NODE_ENV !== 'production';
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
@@ -215,12 +195,9 @@ function PlanPage() {
                 'Content-Type': 'application/json',
             }
         })
-        console.log(response)
         let data = await response.json()
         .then(data => {
             if (response.status === 200) {
-                console.log("save success")
-                console.log(data)
                 setSaving(false)
             } else {
                 console.log(response.message)
@@ -231,7 +208,6 @@ function PlanPage() {
 
     const debouncedSaveData = useCallback(
         debounce((data) => {
-            // console.log("debounce1")
             autoSave(data);
         }, 3000), [formData]
     );
@@ -251,14 +227,12 @@ function PlanPage() {
         return debounced
     }
     useEffect(() => {
-        // console.log("debounce3")
         return () => {
             debouncedSaveData.cancel();
         };
     }, [debouncedSaveData]);
 
     useEffect(() => {
-        // console.log("debounce2")
         debouncedSaveData(formData);
     
     }, [formData, debouncedSaveData]);
