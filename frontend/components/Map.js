@@ -2,15 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { GoogleMap, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
-
-
 function Map({ clat, clng, places, isLoaded }) {
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [infoWindowData, setInfoWindowData] = useState();
 
   useEffect(() => {
-    
+    // resets bounds when new places are added
     if (isLoaded && places.length !== 0) {
       const bounds = new window.google.maps.LatLngBounds();
       places?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
@@ -77,55 +75,50 @@ function Map({ clat, clng, places, isLoaded }) {
 
   return mapCenter && (
     <GoogleMap
-        mapContainerStyle={{ width: '100%', height: '100%' }}
-        center={mapCenter}
-        zoom={5}
-        options={mapOptions}
-        onLoad={onMapLoad}
-      >
-        {places && places.map(({ address, lat, lng, name, day }, ind) => (
-          <MarkerF
-            key={ind}
-            position={{ lat, lng }}
-            onClick={() => {
-              handleMarkerClick(ind, lat, lng, address, name);
-            }}
-            icon={{
-              path: faLocationDot.icon[4],
-              fillColor: renderColor(day),
-              fillOpacity: 1,
-              anchor: new google.maps.Point(
-                faLocationDot.icon[0] / 2, // width
-                faLocationDot.icon[1] // height
-              ),
-              strokeWeight: 2,
-              strokeColor: "#ffffff",
-              scale: 0.075,
+      mapContainerStyle={{ width: '100%', height: '100%' }}
+      center={mapCenter}
+      zoom={5}
+      options={mapOptions}
+      onLoad={onMapLoad}
+    >
+      {places && places.map(({ address, lat, lng, name, day }, ind) => (
+        <MarkerF
+          key={ind}
+          position={{ lat, lng }}
+          onClick={() => {
+            handleMarkerClick(ind, lat, lng, address, name);
+          }}
+          icon={{
+            path: faLocationDot.icon[4],
+            fillColor: renderColor(day),
+            fillOpacity: 1,
+            anchor: new google.maps.Point(
+              faLocationDot.icon[0] / 2, // width
+              faLocationDot.icon[1] // height
+            ),
+            strokeWeight: 2,
+            strokeColor: "#ffffff",
+            scale: 0.075,
 
-            }}
-          >
-            {isOpen && infoWindowData?.id === ind && (
-              <InfoWindowF
-                onCloseClick={() => {
-                  setIsOpen(false);
-                }}
-              >
-                <div className='flex-col flex justify-center items-center'>
-                  <p className='font-medium'>{infoWindowData.name}</p>
-                  <p>{infoWindowData.address}</p>
-                </div>
-              </InfoWindowF>
-            )}
-          </MarkerF>
-        ))}
-      </GoogleMap>
+          }}
+        >
+          {isOpen && infoWindowData?.id === ind && (
+            <InfoWindowF
+              onCloseClick={() => {
+                setIsOpen(false);
+              }}
+            >
+              <div className='flex-col flex justify-center items-center'>
+                <p className='font-medium'>{infoWindowData.name}</p>
+                <p>{infoWindowData.address}</p>
+              </div>
+            </InfoWindowF>
+          )}
+        </MarkerF>
+      ))}
+    </GoogleMap>
   )
 }
-
-const containerStyle = {
-  width: '400px',
-  height: '400px'
-};
 
 const DUMMY = [
   {

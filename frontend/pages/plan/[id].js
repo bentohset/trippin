@@ -14,6 +14,7 @@ import { useLoadScript } from "@react-google-maps/api";
 function PlanPage() {
     const router = useRouter();
     const id = router.query.id;
+    console.log(id)
     const [formData, setFormData] = useState({
         title: '',
         startDate: '',
@@ -25,7 +26,6 @@ function PlanPage() {
         currency: '',
         center:[]
     })
-    const [center, setCenter] = useState([])
     const [saving, setSaving] = useState(false)
     const [openBudget, setOpenBudget] = useState(false)
     const [budget, setBudget] = useState(0)
@@ -45,7 +45,6 @@ function PlanPage() {
                     }
                 })
                 const data = await response.json()
-                setCenter(data.center)
                 if (response.status == 200) {
                     setFormData({...data})
                     setBudget(formData.totalBudget)
@@ -56,9 +55,12 @@ function PlanPage() {
                 console.log(error)
             }
         }
-        fetchData()
+        if (id) {
+            fetchData()
+        }
         
-    }, []);
+        
+    }, [id]);
 
     useEffect(() => {
         let total = 0
@@ -185,7 +187,12 @@ function PlanPage() {
     
 
     const autoSave = async () => {
+        console.log("autosave")
         setSaving(true)
+        if (!id && !formData.title) {
+            console.log("autosave is null")
+            return null
+        }
         let dev = process.env.NODE_ENV !== 'production';
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
         const response = await fetch(url, {
@@ -246,8 +253,7 @@ function PlanPage() {
     //mapbox on the side https://docs.mapbox.com/mapbox-gl-js/guides/install/
     //sample yt vid https://www.youtube.com/watch?v=aAupumVpqcE
     //https://www.youtube.com/watch?v=MOqkfQIMdLE and github repo https://github.com/kukicado/building-modern-app-with-nextjs-and-mongodb
-
-    return (
+    return formData.title && (
         <div className="bg-white">
             <main className="flex">
                 
