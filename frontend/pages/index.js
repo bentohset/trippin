@@ -142,7 +142,7 @@ const Home = () => {
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
-            {trips.length > 0 ? trips.map(({_id, img, location, startDate, endDate, title, countryCode})=>(
+            {trips && trips.length > 0 ? trips.map(({_id, img, location, startDate, endDate, title, countryCode})=>(
               
                 <SmallCard 
                   key={_id}
