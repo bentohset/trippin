@@ -126,10 +126,10 @@ const Home = () => {
   
   return (
     <div className=''>
-      <Head>
-        <title>Trip Planner App</title>
+      {/* <Head>
+        <title>Trippin</title>
         <link rel="icon" href="/favicon.ico" />
-      </Head> 
+      </Head>  */}
       {/* Header */}
       <Header/>
       <div className='m-2'></div>
