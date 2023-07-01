@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/auth';
 import VisitedMap from '../components/VisitedMap';
 import VisitedStatBoard from '../components/VisitedStatBoard';
+import Footer from '../components/Footer';
 
 
 const Home = () => {
@@ -141,7 +142,7 @@ const Home = () => {
         <section className='pt-6'>
           <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
-            {trips && trips.map(({_id, img, location, startDate, endDate, title, countryCode})=>(
+            {trips.length > 0 ? trips.map(({_id, img, location, startDate, endDate, title, countryCode})=>(
               
                 <SmallCard 
                   key={_id}
@@ -155,7 +156,11 @@ const Home = () => {
                   handleDeleteTrip={handleDeleteTrip}
                 />
 
-            ))}
+            ))
+            :(
+              <p className='text-gray-500 text-lg'>You have no trips yet :(</p>
+            )}
+
           </div>
         </section>
         
@@ -169,14 +174,8 @@ const Home = () => {
           </div>
         </section>
 
-        <section>
-          <h2 className='text-4xl font-semibold py-8'>Devs to do list</h2>
-          <ol className='font-semibold text-xl p-2 mb-10 space-y-4 list-disc'>
-            <li>fix cost bug</li>
-            <li>implement profile settings</li>
-          </ol>
-        </section>
       </main>
+      <Footer/>
     </div>
   )
 }
