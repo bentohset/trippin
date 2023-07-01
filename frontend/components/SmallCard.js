@@ -6,36 +6,19 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { useAuth } from "../hooks/auth";
 
 
-function SmallCard({ id, startDate, endDate, year, title, countryCode }) {
+function SmallCard({ id, startDate, endDate, year, title, countryCode, handleDeleteTrip }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const { cookies } = useAuth()
 
   const refreshData = () => {
-    // router.reload()
-    router.replace(router.asPath, undefined,  { scroll: false });
+    router.reload()
+    // router.replace(router.asPath, undefined,  { scroll: false });
   }
 
-  const handleDelete = async () => {
-    let dev = process.env.NODE_ENV !== 'production';
-
-    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      } 
-    })
-
-    const data = await response.json()
-    .then(data => {
-      if (response.status === 200) {
-        handleClose()
-        refreshData()
-      } else {
-        console.log(data.message)
-      }
-    })
+  const handleDelete = (id, coutryCode) => {
+    handleDeleteTrip(id, countryCode)
+    handleClose()
   }
 
   const handleOpen = () => {
@@ -144,7 +127,7 @@ function SmallCard({ id, startDate, endDate, year, title, countryCode }) {
             >
               Don't delete
             </Button>
-            <Button onClick={()=>{handleDelete()}} autoFocus
+            <Button onClick={()=>{handleDelete(id, countryCode)}} autoFocus
               sx={{
                 backgroundColor: 'rgb(248, 113, 113)',
                 color: 'black',

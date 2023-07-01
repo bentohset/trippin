@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useAuth } from "../hooks/auth";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 
-function ProfileTripCard({ index, length, id, img, location, startDate, endDate, year, title }) {
-  const { cookies } = useAuth()
+function ProfileTripCard({ index, length, id, startDate, endDate, year, title, handleDeleteTrip }) {
   const [open, setOpen] = useState(false)
-  const router = useRouter()
 
   const convertDate = (date) => {
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -24,30 +20,9 @@ function ProfileTripCard({ index, length, id, img, location, startDate, endDate,
 		return year
 	}
 
-  const refreshData = () => {
-    router.replace(router.asPath, undefined,  { scroll: false });
-  }
-
-  const handleDelete = async () => {
-    let dev = process.env.NODE_ENV !== 'production';
-
-    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      } 
-    })
-
-    const data = await response.json()
-    .then(data => {
-      if (response.status === 200) {
-        handleClose()
-        refreshData()
-      } else {
-        console.log(data.message)
-      }
-    })
+  const handleDelete = () => {
+    handleDeleteTrip(id)
+    handleClose()
   }
 
   const handleOpen = () => {

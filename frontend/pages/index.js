@@ -60,6 +60,7 @@ const Home = () => {
 		
 	}, [])
 
+  //returns an array of objects: {countryCode:string(lowercase), freq: integer}
   const getStats = (tripArr) => {
     const map = {}
 
@@ -76,9 +77,51 @@ const Home = () => {
     }));
 
     const sorted = result.sort((a,b) => b.frequency - a.frequency)
-
     return sorted
   }
+
+  const decreaseStat = (countryCode) => {
+    setStats(prev => 
+      prev.map(country => {
+        if (country.countryCode === countryCode) {
+          const updatedFreq = country.frequency - 1
+          if (updatedFreq <= 0) {
+            return null;
+          } else {
+            return { ...country, freq: updatedFreq}
+          }
+        }
+
+        return country
+      }).filter(Boolean)
+    )
+    console.log(stats)
+  }
+
+  const handleDeleteTrip = async (id, countryCode) => {
+    let dev = process.env.NODE_ENV !== 'production';
+
+    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      } 
+    })
+
+    await response.json()
+    .then(data => {
+      if (response.status === 200) {
+        setTrips(prevTrips => prevTrips.filter(tripObj => tripObj._id !== id))
+        decreaseStat(countryCode)
+      } else {
+        console.log(data.message)
+      }
+    })
+    console.log("updated", stats)
+  }
+
+  
   
   return (
     <div className=''>
@@ -109,6 +152,7 @@ const Home = () => {
                   year={getYear(startDate)}
                   title={title}
                   countryCode={countryCode}
+                  handleDeleteTrip={handleDeleteTrip}
                 />
 
             ))}
