@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import Footer from "../../components/Footer";
 import Map from "../../components/Map";
 import HeaderPlan from "../../components/HeaderPlan";
 import VisitList from "../../components/VisitList";
@@ -14,7 +13,6 @@ import { useLoadScript } from "@react-google-maps/api";
 function PlanPage() {
     const router = useRouter();
     const id = router.query.id;
-    console.log(id)
     const [formData, setFormData] = useState({
         title: '',
         startDate: '',
@@ -187,10 +185,9 @@ function PlanPage() {
     
 
     const autoSave = async () => {
-        console.log("autosave")
         setSaving(true)
         if (!id && !formData.title) {
-            console.log("autosave is null")
+            console.log("autosave is nullified")
             return null
         }
         let dev = process.env.NODE_ENV !== 'production';

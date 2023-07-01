@@ -1,6 +1,3 @@
-Deploy frontend on vercel
-backend on heroku
+# Trippin
 
-or
-
-https://blog.logrocket.com/build-server-rendered-react-app-next-express/
+A trip planner web app
