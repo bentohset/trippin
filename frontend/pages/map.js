@@ -1,17 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import Map from '../components/Map'
-import PlacesAutocomplete from '../components/PlacesAutocomplete'
+import React, { useState } from 'react'
 import { useLoadScript } from "@react-google-maps/api";
-import usePlacesAutocomplete, {
-    getGeocode,
-    getLatLng,
-  } from 'use-places-autocomplete';
 import VisitedMap from '../components/VisitedMap';
 
 const index = 0
 
 function map() {
-  const libraries = useMemo(() => ['places'], []);
   const [clat, setCLat] = useState(27.672932021393862);
   const [clng, setCLng] = useState(85.31184012689732);
 
@@ -21,12 +14,6 @@ function map() {
     { address: "Address3", lat: 18.5642, lng: 73.7769 },
   ];
 
-  const [places, setPlaces] = useState([])
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLEMAPS_KEY,
-    libraries: libraries,
-  }); 
 
   return (
     <div className='h-screen bg-white justify-center items-center'>

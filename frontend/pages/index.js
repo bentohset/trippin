@@ -3,8 +3,6 @@ import { useRouter } from 'next/router';
 import Header from '../components/Header'
 import Banner from '../components/Banner'
 import SmallCard from '../components/SmallCard'
-import Footer from '../components/Footer'
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useEffect, useState } from 'react';

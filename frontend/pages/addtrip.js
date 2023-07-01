@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import Header from '../components/Header'
-import Footer from '../components/Footer'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
@@ -8,7 +7,6 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/auth';
 
-//TODO: fetch autocomplete only after a number of characters is typed to limit requests
 function Addtrip() {
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
@@ -22,7 +20,6 @@ function Addtrip() {
     const [message, setMessage] = useState('');
     const [autocompleteLocations, setAutocompleteLocations] = useState([]);
     const [openAutocomplete, setOpenAutocomplete] = useState(false)
-    console.log(autocompleteLocations)
     const { cookies } = useAuth()
     const router = useRouter()
     // const autoRef = useRef(null);
@@ -46,7 +43,6 @@ function Addtrip() {
         
         if (value.length >= 4) {
             try {
-                console.log("fetch mapbox")
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -54,13 +50,9 @@ function Addtrip() {
                     }
                 })
                 const data = await response.json()
-                console.log(data.features)
                 !autocompleteLocations.includes(value) &&
                 data.features &&
                 setAutocompleteLocations(
-                    //if place_type includes country, then .properties.short_code
-                    //else if place_type includes region/place, then .context[0].short_code
-                    //else fallback
                     data.features.map(place => {
                         let code = ''
                         if (place.place_type.includes("country")) {
@@ -87,7 +79,6 @@ function Addtrip() {
     }
 
     const selectAutocomplete = (option) => {
-        console.log(option.countryCode)
         setLocation(option)
         setOpenAutocomplete(false)
     }
@@ -97,26 +88,6 @@ function Addtrip() {
         setEndDate(ranges.selection.endDate)
         
     }
-
-    // const handleClickOutside = (event) => {
-    //     if (autoRef.current && !autoRef.current.contains(event.target)) {
-    //         console.log("outside")
-    //         setOpenAutocomplete(false);
-    //     }
-    // };
-    
-    // useEffect(() => {
-    //     if (openAutocomplete) {
-    //         document.addEventListener('mousedown', handleClickOutside);
-    //     } else {
-    //         document.removeEventListener('mousedown', handleClickOutside);
-    //     }
-        
-    
-    //     return () => {
-    //       document.removeEventListener('mousedown', handleClickOutside);
-    //     };
-    // }, [openAutocomplete]);
 
     
     const submitForm = async (e) => {
@@ -129,7 +100,6 @@ function Addtrip() {
             startDate,
             endDate,
         };
-        console.log(trip)
         let dev = process.env.NODE_ENV !== 'production';
     
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/trip/${cookies.id}`
@@ -148,7 +118,6 @@ function Addtrip() {
                 return setMessage(data.message);
             }
             else {
-                // set the error
                 return setError(data.message);
             }
         })
@@ -180,7 +149,6 @@ function Addtrip() {
                         onChange={handleLocationChange}
                         className='relative rounded-xl p-2 px-4 mb-2 border-2 border-gray-200' 
                         placeholder='Eg. Singapore, Stockholm, Rome'
-                        // pattern={autocompleteLocations.text.join("|")}
                         autoComplete='off'
                     />
                     {
@@ -192,7 +160,6 @@ function Addtrip() {
                                     <li key={i} 
                                         className='text-gray-600 cursor-pointer p-1 hover:bg-gray-200 w-full rounded-md' 
                                         onClick={(event)=>{
-                                            // event.stopPropagation()
                                             selectAutocomplete(city)
                                         }}
                                     >
@@ -210,18 +177,6 @@ function Addtrip() {
                             <></>
                         )
                     }
-                    
-                    {/* <AddressAutofill accessToken={process.env.mapbox_key}>
-                        <input
-                        name="address" placeholder="Address" type="text"
-                        // autoComplete=""
-                        />
-                    </AddressAutofill> */}
-                    {/* <SearchBox accessToken={process.env.mapbox_key}
-                        onChange={(e)=>{setSearchValue(e.target.value)}}
-                        value={searchvalue}
-                        className='rounded-xl p-2 px-4 mb-2 border-2 border-gray-200' 
-                    /> */}
 
                     <label htmlFor='dates' className='font-semibold my-2'>Dates</label>
                     <DateRangePicker
@@ -291,4 +246,4 @@ const DUMMYDATA = [
     },
 ]
 
-export default Addtrip
+export default ProtectedRoute(Addtrip)

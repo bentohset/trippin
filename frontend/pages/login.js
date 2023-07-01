@@ -22,7 +22,6 @@ function login() {
         setLoading(true)
         if (res === "Success") {
             router.replace('/')
-            console.log(loading)
         } else {
             setError(res)
             setLoading(false)

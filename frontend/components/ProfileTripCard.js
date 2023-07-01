@@ -9,7 +9,6 @@ function ProfileTripCard({ index, length, id, img, location, startDate, endDate,
   const { cookies } = useAuth()
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  console.log(startDate, length)
 
   const convertDate = (date) => {
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -26,7 +25,6 @@ function ProfileTripCard({ index, length, id, img, location, startDate, endDate,
 	}
 
   const refreshData = () => {
-    console.log('refresh')
     router.replace(router.asPath, undefined,  { scroll: false });
   }
 
@@ -41,12 +39,9 @@ function ProfileTripCard({ index, length, id, img, location, startDate, endDate,
       } 
     })
 
-    console.log(response)
     const data = await response.json()
     .then(data => {
       if (response.status === 200) {
-        console.log("successfully deleted")
-        console.log(data)
         handleClose()
         refreshData()
       } else {

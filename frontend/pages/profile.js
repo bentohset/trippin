@@ -4,12 +4,10 @@ import { useRouter } from 'next/router';
 import Header from "../components/Header";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import ProfileTripCard from "../components/ProfileTripCard";
-import Footer from "../components/Footer";
 
 const profile = ({ initialUser }) => {
     const { cookies } = useAuth()
     const [user, setUser] = useState(initialUser)
-    // const [isRefreshing, setIsRefreshing] = useState(false);
     const [username, setUsername] = useState(initialUser.username)
     const [email, setEmail] = useState(initialUser.email)
 	const [openEdit, setOpenEdit] = useState(false)
@@ -17,7 +15,6 @@ const profile = ({ initialUser }) => {
 	const [trips, setTrips]  = useState([])
 
 	const router = useRouter()
-	console.log(trips)
 
     useEffect(() => {
 		updateProfile()
@@ -50,7 +47,6 @@ const profile = ({ initialUser }) => {
 	}, [])
 
     const updateProfile = async () => {
-		console.log("update")
 		let dev = process.env.NODE_ENV !== 'production';
 		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/${cookies.id}`
 		const response = await fetch(url, {

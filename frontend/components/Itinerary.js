@@ -27,7 +27,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     }, [list.places])
 
     useEffect(() => {
-        console.log("update")
       //if selected items not in options, remove selected
         let index = -1
         for (let i = 0; i < selectedItems.length; i++) {
@@ -35,7 +34,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                 index = i
             }
         }
-        console.log(index)
         if (index != -1) {
             setNotes(prev => {
                 const newArray = [...prev]
@@ -70,8 +68,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                     }
                 })
                 const data = await response.json()
-                // console.log("fetch itinerary")
-                // console.log(data)
                 setSelectedItems(data.locations)
                 setNotes(data.notes)
                 setCosts(data.cost)
@@ -86,8 +82,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     }, [])
     
     const autoSave = async () => {
-        console.log("savingc")
-        console.log(costs)
         setSaving(true)
         let dev = process.env.NODE_ENV !== 'production';
         const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
@@ -102,12 +96,9 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                 'Content-Type': 'application/json',
             }
         })
-        console.log(response)
         let data = await response.json()
         .then(data => {
             if (response.status === 200) {
-                console.log("save successc")
-                console.log(data)
                 setSaving(false)
                 setCostsDraft(costs)
             } else {
@@ -118,7 +109,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
 
     const debouncedSaveData = useCallback(
         debounce((data) => {
-            // console.log("debounce1c")
             autoSave(data);
         }, 3000), [notes, selectedItems, costs]
     );
@@ -139,14 +129,12 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     }
 
     useEffect(() => {
-        // console.log("debounce3")
         return () => {
             debouncedSaveData.cancel();
         };
     }, [debouncedSaveData]);
 
     useEffect(() => {
-        // console.log("debounce2")
         debouncedSaveData(notes);
     
     }, [notes, selectedItems, costs, debouncedSaveData]);
@@ -160,12 +148,10 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     }
 
     const handleItemSelect = (value) => {
-        // console.log("onchanges")
         setSelectedItems(value);
     }
 
     const handleRemove = (item, index) => {
-        console.log("remove")
         updateTotal(0, costs[index])
         setSelectedItems(selectedItems.filter(i => i !== item));
         setNotes(prev => {
@@ -192,14 +178,10 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
         } else {
             currentCost.current = 0
         }
-        // console.log('open')
-        // console.log(costs[index])
-        // console.log(currentCost.current)     
     };
     
     //close and cancel
     const handleClose = () => {
-        console.log("close")
         setCostsDraft(costs)
         setOpenCost('');
     };
@@ -207,14 +189,12 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
 
     //close and save cost
     const handleCostSave = (index) => {
-        console.log("save")
         if (costsDraft[index] === '') {
             setCosts(prev => {
                 const updated = [...prev]
                 updated[index] = ''
                 return updated
             })
-            console.log(currentCost.current)
             updateTotal(0, currentCost.current)
         } else {
             setCosts(prev => {
@@ -222,7 +202,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                 updated[index] = costsDraft[index]
                 return updated
             })
-            console.log(costsDraft[index])
             updateTotal(parseInt(costsDraft[index]), currentCost.current)
         }
         setOpenCost('');
@@ -239,7 +218,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
             })
         } 
         if (regex.test(value)) {
-            console.log(costsDraft)
             setCostsDraft(prev => {
                 const updated = [...prev]
                 updated[index] = parseInt(value)

@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import Script from "next/script"
+import React from 'react'
 import usePlacesAutocomplete, {
     getGeocode,
     getLatLng,
@@ -27,7 +26,6 @@ function PlacesAutocomplete({onAddressSelect}) {
               structured_formatting: { main_text, secondary_text },
               description,
             } = suggestion;
-            console.log(suggestion)
             return (
                 <li
                   className='hover:bg-gray-200 w-full cursor-pointer p-1 rounded-md'
@@ -50,10 +48,6 @@ function PlacesAutocomplete({onAddressSelect}) {
 
   return (
     <div className="h-full w-full relative">
-      {/* <Script
-        defer
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLEMAPS_KEY}&libraries=places`}
-      /> */}
       <input
         value={value}
         className="w-full my-4 rounded-xl p-4 outline-none bg-gray-100"

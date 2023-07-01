@@ -1,12 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { GoogleMap, MarkerF, useLoadScript, InfoWindowF } from "@react-google-maps/api";
-import { FaBeer, FaMapMarkerAlt } from "react-icons/fa";
-import { faBus, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect, useMemo } from 'react'
+import { GoogleMap, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 
 
 function Map({ clat, clng, places, isLoaded }) {
-  const libraries = useMemo(() => ['places'], []);
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [infoWindowData, setInfoWindowData] = useState();
@@ -25,25 +23,12 @@ function Map({ clat, clng, places, isLoaded }) {
       }
     }
   }, [places, mapRef]);
-
-  // useEffect(()=> {
-  //     places?.forEach(({ lat, lng, address, day, name }) => bounds.extend({ lat, lng }));
-  //     bounds.extend({ lat: clat, lng: clng })
-  //     mapRef.fitBounds(bounds);
-  //     const zoom = mapRef.getZoom();
-  //     const maxZoom = 14; // Set your desired maximum zoom level
-  //     if (zoom > maxZoom) {
-  //       mapRef.setZoom(maxZoom);
-  //     }
-  //   }
-  // },[places])
   
 
   const onMapLoad = (map) => {
     console.log('map loading............')
     setMapRef(map);
     const bounds = new google.maps.LatLngBounds();
-    console.log("places", places)
     if (places.length !== 0) {
       places?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
       map.fitBounds(bounds);
@@ -91,7 +76,7 @@ function Map({ clat, clng, places, isLoaded }) {
         options={mapOptions}
         onLoad={onMapLoad}
       >
-        {places && DUMMY.map(({ address, lat, lng, name, day }, ind) => (
+        {places && places.map(({ address, lat, lng, name, day }, ind) => (
           <MarkerF
             key={ind}
             position={{ lat, lng }}
@@ -128,25 +113,6 @@ function Map({ clat, clng, places, isLoaded }) {
         ))}
       </GoogleMap>
   )
-    // <ReactMapGL
-    //     reuseMaps
-    //     mapStyle='mapbox://styles/mapbox/streets-v9'
-    //     mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_KEY}
-	// 	{...viewState}
-	// 	onMove={evt => setViewState(evt.viewState)}
-	// 	// initialViewState={viewport}
-    // >
-	// 	<NavigationControl position="top-left" showCompass={false}/>
-    //   {/* {DUMMY.map(result=>(
-    //       <Marker
-	// 	  	key={result.place}
-    //         longitude={result.long}
-    //         latitude={result.lat}
-    //         anchor='top'
-    //       >
-    //       </Marker>
-    //   ))} */}
-    // </ReactMapGL>
 }
 
 const containerStyle = {

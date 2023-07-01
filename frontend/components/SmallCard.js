@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Image from 'next/image'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { XMarkIcon } from '@heroicons/react/20/solid'
@@ -7,12 +6,13 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { useAuth } from "../hooks/auth";
 
 
-function SmallCard({ id, img, location, startDate, endDate, year, title, countryCode }) {
+function SmallCard({ id, startDate, endDate, year, title, countryCode }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const { cookies } = useAuth()
 
   const refreshData = () => {
+    // router.reload()
     router.replace(router.asPath, undefined,  { scroll: false });
   }
 
@@ -30,8 +30,6 @@ function SmallCard({ id, img, location, startDate, endDate, year, title, country
     const data = await response.json()
     .then(data => {
       if (response.status === 200) {
-        console.log("successfully deleted")
-        console.log(data)
         handleClose()
         refreshData()
       } else {

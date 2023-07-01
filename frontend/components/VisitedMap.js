@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import ReactMapGL, { Source, Layer } from 'react-map-gl';
+import React from 'react'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
-import { getCode } from 'country-list'
 import getCountryISO2 from 'country-iso-3-to-2'
 
 
