@@ -6,6 +6,7 @@ import Select from 'react-select';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 
+
 function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     const [selectedItems, setSelectedItems] = useState([]);
     const [options, setOptions] = useState([]);
@@ -15,6 +16,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     const [openCost, setOpenCost] = useState('')
 
     const currentCost = useRef(0)
+
     // to set options from places in parent formdata
     useEffect(() => {
         setOptions(list.places.map((item, index) => {
@@ -26,8 +28,10 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
 
     }, [list.places])
 
+    //when places is removed from the places to visit array
+    //if selected items not in options, remove selected
     useEffect(() => {
-      //if selected items not in options, remove selected
+        
         let index = -1
         for (let i = 0; i < selectedItems.length; i++) {
             if (!options.includes(selectedItems[i])) {
@@ -52,7 +56,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
             })
         }
         
-
     }, [options])
     
 
@@ -149,6 +152,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
 
     const handleItemSelect = (value) => {
         setSelectedItems(value);
+        setCosts(prev => [...prev, 0])
     }
 
     const handleRemove = (item, index) => {
@@ -230,9 +234,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
         const key = event.key;
         const isNumberKey = /^[0-9]$/.test(key); // Check if the key is a number (0-9)
         const isBackspaceKey = key === 'Backspace';
-        // if (isBackspaceKey && budget.length <= 1) {
-        //     setBudget('')
-        // }
         if (!isNumberKey && !isBackspaceKey) {
           event.preventDefault(); // Prevent typing numbers
         }
@@ -257,16 +258,6 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
                             value={notes[index]}
 
                         />
-                        {/* <span className='font-semibold mr-1'>$</span>
-                        <input
-                            className='mt-2 w-12 rounded-lg py-1 px-2 text-gray-500 outline-none font-normal [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                            type='number'
-                            pattern="^-?[0-9]\d*\.?\d*$"
-                            placeholder='Cost'
-                            value={costs[index]}
-                            onChange={(e) => onCostChange(index, e.target.value)}
-                            onKeyDown={handleKeyDownCost}
-                        /> */}
                         <button
                             className='hover:bg-gray-200 rounded-lg px-2 py-1 text-xs'
                             onClick={()=>{handleOpen(index)}}
