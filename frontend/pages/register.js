@@ -51,7 +51,7 @@ function register() {
   return (
     <div className='bg-gradient-to-tr from-[rgba(223,167,39,1)] to-[rgba(255,111,145,1)] h-full'>
         <main className='sm:flex flex-1 flex-col items-center justify-center h-screen'>
-        <div className='relative bg-white flex flex-col px-20 py-10 w-2/6 sm:rounded-3xl rounded-none shadow-xl'>
+        <div className='relative bg-white flex flex-col px-20 py-12 sm:rounded-3xl rounded-none shadow-xl'>
         {error ? (
             <div className='absolute top-0 flex items-center place-self-center justify-center mt-4 text-red-500'>
                 <h3>{error}</h3>
@@ -101,12 +101,13 @@ function register() {
                     disabled={loading}
                 >Register</button>
                 
-                <button className="hover:text-black text-gray-600" onClick={()=>{router.replace('/login')}}>
-                Already a member? <span className='font-semibold'>Log in here</span>
-                </button>
+                
             </form>
             
         </div>
+        <button className="hover:text-black text-gray-600" onClick={()=>{router.replace('/login')}}>
+            Already have an account? <span className='font-semibold'>Log in here</span>
+        </button>
         </div>
         </main>
     </div>
