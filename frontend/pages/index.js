@@ -126,10 +126,6 @@ const Home = () => {
   
   return (
     <div className=''>
-      {/* <Head>
-        <title>Trippin</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>  */}
       {/* Header */}
       <Header/>
       <div className='m-2'></div>
