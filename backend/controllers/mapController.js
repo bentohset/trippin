@@ -1,5 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const fetch = require('node-fetch');
+
 require('dotenv').config();
 
 const mapboxKey = process.env.MAPBOX_KEY
