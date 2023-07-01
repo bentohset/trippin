@@ -43,7 +43,14 @@ function Map({ clat, clng, places, isLoaded }) {
   };
 
   
-  const mapCenter = useMemo(() => ({ lat: clat, lng: clng }), [clat, clng]);
+  const mapCenter = useMemo(() => { 
+    if (clat && clng) {
+      return { lat: clat, lng: clng }
+    }
+    return null
+    
+  }, [clat, clng]);
+
 
   const mapOptions = useMemo(
     () => ({
@@ -68,7 +75,7 @@ function Map({ clat, clng, places, isLoaded }) {
     }
   }
 
-  return (
+  return mapCenter && (
     <GoogleMap
         mapContainerStyle={{ width: '100%', height: '100%' }}
         center={mapCenter}
