@@ -10,7 +10,7 @@ function Visited({ stats }) {
     const percentageVisited = numberVisited / 202 * 100
     const router = useRouter();
 
-    const VisitedStatBoard = ({ visitedPlaces }) => (
+    const VisitedStatBoard = () => (
         <div className='bg-white rounded-2xl z-20 absolute right-0 top-0 h-full w-1/3 shadow-md p-4'>
             <div className='text-black flex flex-col gap-2'>
                 <h1 className='font-bold text-2xl'>Statistics</h1>
@@ -22,7 +22,7 @@ function Visited({ stats }) {
                 </div>
                 <div className='mt-2'>
                     <p className='font-bold text-lg'>Top 5 visited countries</p>
-                    {visitedPlaces.length > 0 ? (visitedPlaces.slice(0,5).map((place, index) => {
+                    {stats.length > 0 ? (stats.slice(0,5).map((place, index) => {
                         const name = getName(place.countryCode)
     
                         return (
@@ -43,7 +43,7 @@ function Visited({ stats }) {
         </div>
     )
 
-    const VisitedMap = ({ visitedPlaces }) => (
+    const VisitedMap = () => (
         <ComposableMap 
             projection='geoMercator'
             projectionConfig={{
@@ -68,7 +68,7 @@ function Visited({ stats }) {
                 {({ geographies }) =>
                 geographies.map((geo) => {
                     const countryCode = getCountryISO2(geo.id)
-                    const isVisited = visitedPlaces.some((trip) => trip.countryCode.toUpperCase() === countryCode)
+                    const isVisited = stats.some((trip) => trip.countryCode.toUpperCase() === countryCode)
 
                     return (
                         <Geography
@@ -91,8 +91,8 @@ function Visited({ stats }) {
             Visited
         </h2>
         <div className='flex flex-row justify-center text-white items-center w-full h-[500px] mb-10 relative rounded-2xl bg-[#AAD7FF] shadow-md'>
-            <VisitedMap visitedPlaces={stats}/>
-            <VisitedStatBoard visitedPlaces={stats}/>
+            <VisitedMap/>
+            <VisitedStatBoard/>
         </div>
     </section>
   )
