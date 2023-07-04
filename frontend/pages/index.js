@@ -7,9 +7,8 @@ import SmallCard from '../components/SmallCard'
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/auth';
-import VisitedMap from '../components/VisitedMap';
-import VisitedStatBoard from '../components/VisitedStatBoard';
 import Footer from '../components/Footer';
+import Visited from '../components/Visited';
 
 
 const Home = () => {
@@ -159,16 +158,8 @@ const Home = () => {
 
           </div>
         </section>
-        
-        <section>
-          <h2 className='text-4xl font-semibold py-8'>
-            Visited
-          </h2>
-          <div className='flex flex-row justify-center text-white items-center w-full h-[500px] mb-10 relative rounded-2xl bg-[#AAD7FF] shadow-md'>
-              <VisitedMap visitedPlaces={stats}/>
-              <VisitedStatBoard visitedPlaces={stats}/>
-          </div>
-        </section>
+
+        <Visited stats={stats}/>
 
       </main>
       <Footer/>
