@@ -6,13 +6,12 @@ import Select from 'react-select';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 
+//formData.itinerary[dateIndex]: {cost:[], dateIndex, notes:[], locations:[]}
 
-function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
-    const [selectedItems, setSelectedItems] = useState([]);
+function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, setData }) {
+    const [selectedItems, setSelectedItems] = useState(list.itinerary[dateIndex].locations || []);
     const [options, setOptions] = useState([]);
-    const [notes, setNotes] = useState([]);
-    const [costs, setCosts] = useState(Array.from({length: 25}, () => ''))
-    const [costsDraft, setCostsDraft] = useState(Array.from({length: 25}, () => ''))
+    const [costsDraft, setCostsDraft] = useState([])
     const [openCost, setOpenCost] = useState('')
 
     const currentCost = useRef(0)
@@ -29,156 +28,204 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     }, [list.places])
 
     //when places is removed from the places to visit array
-    //if selected items not in options, remove selected
+    //checks if selected items not in options, remove selected
     useEffect(() => {
-        
-        let index = -1
-        for (let i = 0; i < selectedItems.length; i++) {
-            if (!options.includes(selectedItems[i])) {
-                index = i
-            }
-        }
-        if (index != -1) {
-            setNotes(prev => {
-                const newArray = [...prev]
-                newArray.splice(index, 1)
-                return newArray
-            })
-            setSelectedItems(prev => {
-                const newArray = [...prev]
-                newArray.splice(index, 1)
-                return newArray
-            })
-            setCosts(prev => {
-                const newArray = [...prev]
-                newArray.splice(index, 1)
-                return newArray
-            })
+        const indx = selectedItems.findIndex(obj1 => !options.some(obj2 => obj1.value === obj2.value))
+        if (indx != -1) {
+            //remove all instances of the option
+
+            handleRemove(indx)
         }
         
     }, [options])
-    
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let dev = process.env.NODE_ENV !== 'production';
-                const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                const data = await response.json()
-                setSelectedItems(data.locations)
-                setNotes(data.notes)
-                setCosts(data.cost)
-                setCostsDraft(costs)
-            } catch (error) {
-                console.log(error)
-            }
+        if (list.itinerary[dateIndex].locations.length > 0) {
+            setSelectedItems(list.itinerary[dateIndex].locations)
         }
-        return () => {
-            fetchData()
-        }
-    }, [])
+
+    },[list.itinerary[dateIndex].locations])
     
-    const autoSave = async () => {
-        setSaving(true)
-        let dev = process.env.NODE_ENV !== 'production';
-        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
-        const response = await fetch(url, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "notes": notes,
-                "location": selectedItems,
-                "cost": costs
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        let data = await response.json()
-        .then(data => {
-            if (response.status === 200) {
-                setSaving(false)
-                setCostsDraft(costs)
-            } else {
-                console.log(response.message)
-            }
-        })
-    }
 
-    const debouncedSaveData = useCallback(
-        debounce((data) => {
-            autoSave(data);
-        }, 3000), [notes, selectedItems, costs]
-    );
-
-    function debounce(func, delay) {
-        let timer;
-        const debounced = (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                func.apply(this, args);
-            }, delay);
-        };
-        debounced.cancel = () => {
-            clearTimeout(timer);
-        };
-
-        return debounced
-    }
-
-    useEffect(() => {
-        return () => {
-            debouncedSaveData.cancel();
-        };
-    }, [debouncedSaveData]);
-
-    useEffect(() => {
-        debouncedSaveData(notes);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             let dev = process.env.NODE_ENV !== 'production';
+    //             const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
+    //             const response = await fetch(url, {
+    //                 method: 'GET',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 }
+    //             })
+    //             const data = await response.json()
+    //             setSelectedItems(data.locations)
+    //             setNotes(data.notes)
+    //             setCosts(data.cost)
+    //             setCostsDraft(costs)
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+    //     }
+    //     return () => {
+    //         fetchData()
+    //     }
+    // }, [])
     
-    }, [notes, selectedItems, costs, debouncedSaveData]);
+    // const autoSave = async () => {
+    //     console.log('saving')
+    //     setSaving(true)
+    //     let dev = process.env.NODE_ENV !== 'production';
+    //     const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
+    //     const response = await fetch(url, {
+    //         method: 'PATCH',
+    //         body: JSON.stringify({
+    //             "notes": notes,
+    //             "location": selectedItems,
+    //             "cost": costs
+    //         }),
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         }
+    //     })
+    //     let data = await response.json()
+    //     .then(data => {
+    //         if (response.status === 200) {
+    //             setSaving(false)
+    //             setCostsDraft(costs)
+    //         } else {
+    //             console.log(response.message)
+    //         }
+    //     })
+    // }
+
+    // const debouncedSaveData = useCallback(
+    //     debounce((data) => {
+    //         autoSave(data);
+            
+    //     }, 3000), [notes, selectedItems, costs]
+    // );
+
+    // function debounce(func, delay) {
+    //     let timer;
+    //     const debounced = (...args) => {
+    //         clearTimeout(timer);
+    //         timer = setTimeout(() => {
+    //             func.apply(this, args);
+    //         }, delay);
+    //     };
+    //     debounced.cancel = () => {
+    //         clearTimeout(timer);
+    //     };
+
+    //     return debounced
+    // }
+
+    // useEffect(() => {
+    //     return () => {
+    //         debouncedSaveData.cancel();
+    //     };
+    // }, [debouncedSaveData]);
+
+    // useEffect(() => {
+    //     if (!saving) {
+    //         debouncedSaveData(notes);
+    //     }
+        
+    
+    // }, [notes, selectedItems, costs, debouncedSaveData, saving]);
     
     const onTextAreaChange = (index, value) => {
-        setNotes(prev => {
-            const updated = [...prev]
-            updated[index] = value
-            return updated
-        })
+        let editedNotes = list.itinerary[dateIndex].notes
+
+        editedNotes[index] = value
+        const newObj = {
+            ...list.itinerary[dateIndex],
+            notes: editedNotes
+        }
+        const newArr = [
+            ...list.itinerary.splice(0, dateIndex),
+            newObj,
+            ...list.itinerary.splice(dateIndex + 1),
+        ]
+        setData((prev) => ({
+            ...prev,
+            itinerary: newArr
+        }))
     }
 
+    //append place to locations array at itinerary dateindex
+    //to initialise empty cost and empty note
     const handleItemSelect = (value) => {
         setSelectedItems(value);
-        setCosts(prev => [...prev, 0])
+        let itineraryObj = list.itinerary[dateIndex]
+        const newLocation = value
+        const newCost = [
+            ...itineraryObj.cost,
+            0
+        ]
+        const newNotes = [
+            ...itineraryObj.notes,
+            ""
+        ]
+        itineraryObj.locations = newLocation
+        itineraryObj.cost = newCost
+        itineraryObj.notes = newNotes
+
+        const newArray = [
+            ...list.itinerary.splice(0, dateIndex),
+            itineraryObj,
+            ...list.itinerary.splice(dateIndex+1),
+        ]
+
+
+        setData((prev) => ({
+            ...prev,
+            itinerary: newArray
+        })
+
+        )
+        setCostsDraft(prev => [...prev, 0])
     }
 
-    const handleRemove = (item, index) => {
-        updateTotal(0, costs[index])
-        setSelectedItems(selectedItems.filter(i => i !== item));
-        setNotes(prev => {
-            const newArray = [...prev]
-            newArray.splice(index, 1)
-            return newArray
-        })
-        setCosts(prev => {
-            const newArray = [...prev]
-            newArray.splice(index, 1)
-            return newArray
-        })
+    //remove from itinerary, delete at index from cost, notes and locations
+    const handleRemove = (index) => {
+        updateTotal(0, list.itinerary[dateIndex].cost[index])
+        // setSelectedItems(selectedItems.filter((i, indx) => indx !== index));
+
+        let itineraryObj = list.itinerary[dateIndex]
+
+        const newLocation = itineraryObj.locations.filter((i, indx) => indx !== index)
+        const newCost = itineraryObj.cost.filter((i, indx) => indx !== index)
+        const newNotes = itineraryObj.notes.filter((i, indx) => indx !== index)
+
+        itineraryObj.locations = newLocation
+        itineraryObj.cost = newCost
+        itineraryObj.notes = newNotes
+
+        const newArray = [
+            ...list.itinerary.splice(0, dateIndex),
+            itineraryObj,
+            ...list.itinerary.splice(dateIndex+1),
+        ]
+
+        setData((prev) => ({
+            ...prev,
+            itinerary: newArray
+        }))
+
         setCostsDraft(prev => {
             const newArray = [...prev]
             newArray.splice(index, 1)
             return newArray
         })
-    }
+
+    };
 
     const handleOpen = (index) => {
         setOpenCost(index);
-        if (costs[index]) {
-            currentCost.current = costs[index]
+        if (list.itinerary[dateIndex].cost[index]) {
+            currentCost.current = list.itinerary[dateIndex].cost[index]
         } else {
             currentCost.current = 0
         }
@@ -186,7 +233,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     
     //close and cancel
     const handleClose = () => {
-        setCostsDraft(costs)
+        setCostsDraft(list.itinerary[dateIndex].cost)
         setOpenCost('');
     };
 
@@ -194,22 +241,41 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
     //close and save cost
     const handleCostSave = (index) => {
         if (costsDraft[index] === '') {
-            setCosts(prev => {
-                const updated = [...prev]
-                updated[index] = ''
-                return updated
-            })
+
+            let itineraryObj = list.itinerary[dateIndex]
+
+            itineraryObj.cost[index] = 0
+
+            const newArray = [
+                ...list.itinerary.splice(0, dateIndex),
+                itineraryObj,
+                ...list.itinerary.splice(dateIndex+1),
+            ]
+
+            setData((prev) => ({
+                ...prev,
+                itinerary: newArray
+            }))
             updateTotal(0, currentCost.current)
         } else {
-            setCosts(prev => {
-                const updated = [...prev]
-                updated[index] = costsDraft[index]
-                return updated
-            })
+            let itineraryObj = list.itinerary[dateIndex]
+
+            itineraryObj.cost[index] = costsDraft[index]
+
+            const newArray = [
+                ...list.itinerary.splice(0, dateIndex),
+                itineraryObj,
+                ...list.itinerary.splice(dateIndex+1),
+            ]
+
+            setData((prev) => ({
+                ...prev,
+                itinerary: newArray
+            }))
             updateTotal(parseInt(costsDraft[index]), currentCost.current)
         }
         setOpenCost('');
-        setCostsDraft(costs)
+        setCostsDraft(list.itinerary[dateIndex].cost)
     }
 
     const handleCostsDraftChange = (index, value) => {
@@ -217,7 +283,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
         if (value === '') {
             setCostsDraft(prev => {
                 const updated = [...prev]
-                updated[index] = ''
+                updated[index] = 0
                 return updated
             })
         } 
@@ -243,26 +309,26 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
   return (
     <div className='flex-1 w-full mt-4'>
         <div className='flex-1 space-y-4'>
-            {(selectedItems.length === 0) ? (<h2 className='font-bold text-gray-400'>Add a place to this day from your list</h2>):
-                selectedItems.map((item, index) => (
+            {(list.itinerary[dateIndex].locations.length === 0) ? (<h2 className='font-bold text-gray-400'>Add a place to this day from your list</h2>):
+            list.itinerary[dateIndex].locations.map((item, index) => (
                     <div key={index} className="bg-gray-100 rounded-xl p-4 text-sm font-semibold flex-grow flex-col">
                         <div className='flex flex-row justify-between'>
                             <p>{item.label}</p>
-                            <button onClick={()=>handleRemove(item, index)} className="font-semibold text-gray-400 self-end hover:text-gray-600">Remove</button>
+                            <button onClick={()=>handleRemove(index)} className="font-semibold text-gray-400 self-end hover:text-gray-600">Remove</button>
                         </div>
                    
                         <TextareaAutosize
                             className='resize-none bg-white outline-none mt-2 mb-2 font-normal p-2 text-gray-500 w-full rounded-lg max-h-58 h-auto flex-shrink-0'
                             placeholder='Add any notes here'
                             onChange={(e) => onTextAreaChange(index, e.target.value)}
-                            value={notes[index]}
+                            value={list.itinerary[dateIndex].notes[index]}
 
                         />
                         <button
                             className='hover:bg-gray-200 rounded-lg px-2 py-1 text-xs'
                             onClick={()=>{handleOpen(index)}}
                         >
-                            {costs[index] ? `${currency} ${costs[index]}` : `$ Add Cost`}
+                            {list.itinerary[dateIndex].cost[index] ? `${currency} ${list.itinerary[dateIndex].cost[index]}` : `$ Add Cost`}
                         </button>
                         <Dialog open={openCost === index} onClose={handleClose}>
                             <DialogTitle>Set Cost</DialogTitle>
@@ -298,7 +364,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal }) {
 
         <Select
             options={options}
-            value={selectedItems} 
+            value={list.itinerary[dateIndex].locations} 
             placeholder="Choose places" 
             isMulti
             classNames={{

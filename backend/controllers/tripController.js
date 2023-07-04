@@ -86,12 +86,14 @@ exports.getTripForm = async (req, res) => {
     }
 
     try {
-        const tripForm = await Trip.findById(id).select('title startDate endDate notes places itinerary totalBudget currency center');
+        const tripForm = await Trip.findById(id);
 
         if (!tripForm) {
             return res.status(404).json({ error: 'Form data not found' });
         }
-        // console.log(tripForm.itinerary[0].locations)
+        console.log("test")
+        console.log(tripForm.itinerary[0].locations)
+        console.log(tripForm.itinerary[0].notes)
         res.status(200).json(tripForm)
     } catch (error) {
         console.log(error)

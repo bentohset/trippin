@@ -30,6 +30,7 @@ function PlanPage() {
     const [totalCost, setTotalCost] = useState(0)
     const [currencyVal, setCurrencyVal] = useState('')
     const [openCurrency, setOpenCurrency] = useState(false) 
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,9 +45,12 @@ function PlanPage() {
                 })
                 const data = await response.json()
                 if (response.status == 200) {
-                    setFormData({...data})
+                    console.log('fetfh')
+                    console.log(data)
+                    setFormData(data)
                     setBudget(formData.totalBudget)
                     setCurrencyVal(formData.currency)
+                    
                 }
                 
             } catch (error) {
@@ -55,6 +59,7 @@ function PlanPage() {
         }
         if (id) {
             fetchData()
+            
         }
         
         
@@ -68,7 +73,6 @@ function PlanPage() {
         setTotalCost(total)
       
     }, [formData])
-    
 
     const startTimestamp = new Date(formData.startDate).getTime();
     const endTimestamp = new Date(formData.endDate).getTime();
@@ -185,6 +189,8 @@ function PlanPage() {
     
 
     const autoSave = async () => {
+        console.log("autosave")
+        console.log(formData)
         setSaving(true)
         if (!id && !formData.title) {
             console.log("autosave is nullified")
@@ -237,9 +243,15 @@ function PlanPage() {
     }, [debouncedSaveData]);
 
     useEffect(() => {
-        debouncedSaveData(formData);
+        if (!isInitialLoad) {
+            debouncedSaveData(formData);
+        } else {
+            console.log('first load')
+            setIsInitialLoad(false)
+        }
+        
     
-    }, [formData, debouncedSaveData]);
+    }, [formData, debouncedSaveData, isInitialLoad]);
 
     const libraries = useMemo(() => ['places'], []);
     const { isLoaded } = useLoadScript({
@@ -302,11 +314,13 @@ function PlanPage() {
                                         </h3>
                                         {formData.places && 
                                         <Itinerary 
-                                            list={formData} dateIndex={index} 
+                                            list={formData} 
+                                            dateIndex={index} 
                                             id={id}
                                             setSaving={setSaving}
                                             currency={formData.currency}
                                             updateTotal={updateTotalCost}
+                                            setData={setFormData}
                                         /> }
                                     </div>
                                 ))}
