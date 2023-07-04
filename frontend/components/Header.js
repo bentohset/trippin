@@ -26,7 +26,6 @@ function Header() {
             document.removeEventListener('click', handleClickOutside);
         }
         
-    
         return () => {
           document.removeEventListener('click', handleClickOutside);
         };
@@ -34,7 +33,7 @@ function Header() {
 
   return (
     <header className='fixed top-0 z-50 grid grid-cols-2 
-    bg-white shadow-md p-2 md:px-10 w-full'>
+    bg-white shadow-md p-2 px-4 md:px-10 w-full'>
         <div className='items-center justify-center w-fit cursor-pointer my-auto'>
             <Link href="/">
                 <h1 className='font-bold text-2xl'>Trippin</h1>
@@ -54,7 +53,7 @@ function Header() {
                 <Bars3Icon className='h-6'/>
                 <UserCircleIcon className='h-6'/>
                 {isOpen && (
-                <div ref={modalRef} className="absolute flex flex-col top-16 right-10 w-36 z-50 bg-white rounded-xl shadow-xl border-[1px]">
+                <div ref={modalRef} className="absolute flex flex-col top-16 md:right-10 right-4 w-36 z-50 bg-white rounded-xl shadow-xl border-[1px]">
                     <button className="text-gray-600 py-1 w-full mt-3 hover:bg-gray-100" onClick={()=>{router.replace('/profile')}}>Profile</button>
                     <button className="text-gray-600 py-1 w-full mb-3 hover:bg-gray-100" onClick={()=>{logout()}}>Logout</button>
                 </div>

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/auth'
 import { useRouter } from 'next/router'
+import FormInput from '../components/FormInput'
 
 function login() {
     const [email, setEmail] = useState('')
@@ -35,7 +36,7 @@ function login() {
 
   return (
     <div className='bg-gradient-to-tr from-[rgba(223,167,39,1)] to-[rgba(255,111,145,1)] h-full'>
-        <main className='sm:flex flex-1 flex-col items-center justify-center h-screen'>
+        <main className='flex flex-col items-center justify-center h-screen'>
             <div className='relative bg-white flex flex-col px-20 py-12 rounded-3xl shadow-xl'>
             {error ? (
                 <div className='absolute top-0 flex items-center place-self-center justify-center mt-4 text-red-500'>
@@ -45,24 +46,21 @@ function login() {
             <h1 className='font-bold text-3xl mb-10 text-center'>Welcome to Trippin</h1>
             <div className='flex-1 justify-center self-center w-[110%]'>
                 <form onSubmit={submitForm} className='flex flex-col gap-1'>
-                    <label htmlFor='email' className='text-sm block text-gray-700'>Email</label>
-                    <input
-                        className='p-2 rounded-xl mb-4 appearance-none border-2 border-gray-200 !outline-none'
-                        type="text"
-                        id='email'
-                        autoComplete='off'
-                        value={email}
+                    <FormInput
+                        placeholder="Email"
+                        label="Email"
                         onChange={(e)=>{setEmail(e.target.value)}}
-                        placeholder='Email'
+                        value={email}
+                        id='email'
+                        type='text'
                     />
-                    <label htmlFor='password' className='text-sm block text-gray-700'>Password</label>
-                    <input
-                        className='p-2 rounded-xl mb-4 appearance-none border-2 border-gray-200 !outline-none'
-                        type="password"
-                        id='password'       
-                        value={password}
+                    <FormInput
+                        placeholder="Password"
+                        label="Password"
                         onChange={(e)=>{setPassword(e.target.value)}}
-                        placeholder='Password'
+                        value={password}
+                        id='password'
+                        type='password'
                     />
 
                     <button 

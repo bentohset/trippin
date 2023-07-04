@@ -11,18 +11,20 @@ function Visited({ stats }) {
     const router = useRouter();
 
     const VisitedStatBoard = () => (
-        <div className='bg-white rounded-2xl z-20 absolute right-0 top-0 h-full w-1/3 shadow-md p-4'>
-            <div className='text-black flex flex-col gap-2'>
-                <h1 className='font-bold text-2xl'>Statistics</h1>
+        <div className='bg-white rounded-2xl z-20 absolute md:right-0 bottom-0 md:top-0 md:h-full md:w-1/4 h-1/3 w-full shadow-md p-4'>
+            <div className='text-black flex md:flex-col md:gap-2 flex-row gap-4 items-start justify-between px-4 md:px-2'>
                 <div>
-                    <p><span className='font-bold'>{numberVisited}</span> countries visited</p>
+                    <h1 className='font-bold text-2xl'>Statistics</h1>
+                    <div>
+                        <p><span className='font-bold'>{numberVisited}</span> countries visited</p>
+                    </div>
+                    <div>
+                        <p><span className='font-bold'>{percentageVisited.toFixed(2)}%</span> of the world visited</p>
+                    </div>
                 </div>
-                <div>
-                    <p><span className='font-bold'>{percentageVisited.toFixed(2)}%</span> of the world visited</p>
-                </div>
-                <div className='mt-2'>
-                    <p className='font-bold text-lg'>Top 5 visited countries</p>
-                    {stats.length > 0 ? (stats.slice(0,5).map((place, index) => {
+                <div className='md:mt-2 md:flex md:flex-col hidden'>
+                    <p className='font-bold text-lg'>Top visited</p>
+                    {stats.length > 0 ? (stats.slice(0,3).map((place, index) => {
                         const name = getName(place.countryCode)
     
                         return (
@@ -54,12 +56,10 @@ function Visited({ stats }) {
             height={500}
             style={{
                 position: 'absolute',
-                height: "600px",
-                top: 0,
-                left: 0,
-                width: "70%", 
+
                 height: "100%"
             }}
+            className='top-0 md:left-0 md:w-10/12 w-auto max-w-full h-full max-h-full rounded-xl bg-blackl'
         >
             <ZoomableGroup
                 center={[0, 40]} zoom={1}
@@ -90,7 +90,7 @@ function Visited({ stats }) {
         <h2 className='text-4xl font-semibold py-8'>
             Visited
         </h2>
-        <div className='flex flex-row justify-center text-white items-center w-full h-[500px] mb-10 relative rounded-2xl bg-[#AAD7FF] shadow-md'>
+        <div className='flex md:flex-row flex-col justify-center text-white items-center w-full md:h-[500px] h-[400px] mb-10 relative rounded-2xl bg-[#AAD7FF] shadow-md'>
             <VisitedMap/>
             <VisitedStatBoard/>
         </div>

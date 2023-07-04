@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import Header from '../components/Header'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
-import { DateRangePicker } from 'react-date-range';
+import { DateRange } from 'react-date-range';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/auth';
+import { useMediaQuery } from '@mui/material';
 
 function Addtrip() {
+    const isMobile = useMediaQuery('(max-width:992px)');
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
     const [location,setLocation] = useState({
@@ -126,7 +128,7 @@ function Addtrip() {
   return (
     <div className='bg-white'>
         <Header/>
-        <main className='mt-16 flex-1 flex-col items-center justify-center m-5 sm:flex'>
+        <main className='pt-16 md:pb-0 pb-4 flex-1 flex-col items-center justify-center m-5 sm:flex'>
             {error ? (
                 <div className='flex items-center justify-center mt-5 text-red-500'>
                     <h3>{error}</h3>
@@ -177,17 +179,19 @@ function Addtrip() {
                             <></>
                         )
                     }
-
-                    <label htmlFor='dates' className='font-semibold my-2'>Dates</label>
-                    <DateRangePicker
-                        id="dates"
-                        ranges={[selectionRange]}
-                        minDate={new Date()}
-                        rangeColors={["#FD5B61"]}
-                        onChange={handleSelect}
-                        sidebar={false}
-                        className="border-gray-200 border-2 rounded-md"
-                    />
+                    <div className='flex flex-col w-full h-auto'>
+                            <label htmlFor='dates' className='font-semibold my-2'>Dates</label>
+                            <DateRange
+                                id="dates"
+                                ranges={[selectionRange]}
+                                minDate={new Date()}
+                                rangeColors={["#FD5B61"]}
+                                onChange={handleSelect}
+                                months={isMobile? 1:2}
+                                direction='horizontal'
+                                className="border-gray-200 border-2 rounded-md"
+                            />
+                        </div>
                     <button 
                         className='text-white bg-[#FD5B61] px-9 py-3 shadow-md rounded-full 
                         font-bold my-5 hover:shadow-xl'

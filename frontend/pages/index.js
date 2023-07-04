@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/auth';
 import Footer from '../components/Footer';
 import Visited from '../components/Visited';
+import Trips from '../components/Trips';
 
 
 const Home = () => {
@@ -17,20 +18,6 @@ const Home = () => {
   const [stats, setStats] = useState([])
 
 	const router = useRouter()
-
-	const convertDate = (date) => {
-		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-		const day = date.slice(8,10) //8 and 9
-		const monthIndex = parseInt(date.slice(5,7)); //5 and 6
-		const year = date.slice(0,4)//0-3 index
-		const month = monthNames[monthIndex-1];
-		return `${day} ${month}`
-	}
-	const getYear = (date) => {
-		const year = date.slice(0,4)//0-3 index
-		return year
-	}
   
 	useEffect(() => {
 		const fetchData = async () => {
@@ -98,66 +85,21 @@ const Home = () => {
     console.log(stats)
   }
 
-  const handleDeleteTrip = async (id, countryCode) => {
-    let dev = process.env.NODE_ENV !== 'production';
-
-    const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user//${id}/${cookies.id}`
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      } 
-    })
-
-    await response.json()
-    .then(data => {
-      if (response.status === 200) {
-        setTrips(prevTrips => prevTrips.filter(tripObj => tripObj._id !== id))
-        decreaseStat(countryCode)
-      } else {
-        console.log(data.message)
-      }
-    })
-    console.log("updated", stats)
-  }
+  
 
   
   
   return (
     <div className=''>
-      {/* Header */}
       <Header/>
+
       <div className='m-2'></div>
 
-      {/* Banner */}
       <Banner />
       
       <main className='max-w-7xl mx-auto px-8 sm:px-16'>
-        
-        <section className='pt-6'>
-          <h2 className='text-4xl font-semibold pb-5'>Your Trips</h2>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4'>
-            {trips && trips.length > 0 ? trips.map(({_id, img, location, startDate, endDate, title, countryCode})=>(
-              
-                <SmallCard 
-                  key={_id}
-                  id={_id}
-                  location={location} 
-                  startDate={convertDate(startDate)} 
-                  endDate={convertDate(endDate)}
-                  year={getYear(startDate)}
-                  title={title}
-                  countryCode={countryCode}
-                  handleDeleteTrip={handleDeleteTrip}
-                />
 
-            ))
-            :(
-              <p className='text-gray-500 text-lg'>You have no trips yet :(</p>
-            )}
-
-          </div>
-        </section>
+        <Trips trips={trips} setTrips={setTrips} decreaseStat={decreaseStat}/>
 
         <Visited stats={stats}/>
 
