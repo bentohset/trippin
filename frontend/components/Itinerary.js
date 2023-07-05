@@ -30,17 +30,24 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, set
     //when places is removed from the places to visit array
     //checks if selected items not in options, remove selected
     useEffect(() => {
-        let index = -1
-        // index = list.itinerary[dateIndex].locations.findIndex(obj1 => !options.some(obj2 => obj1.value === obj2.value))
-        for (let i = 0; i < options.length; i++) {
-            if (!list.itinerary[dateIndex].locations.includes(options[i])) {
-                index = i
-            }
-        }
-        if (index != -1 && list.itinerary[dateIndex].locations.length && options.length > 0) {
+        // let index = -1
+
+        // for (let i = 0; i < list.itinerary[dateIndex].locations.length; i++) {
+        //     if (list.places.some(obj => obj.name === list.itinerary[dateIndex].locations[i].label)) {
+        //         index = i
+        //         console.log(list.places)
+        //         console.log(list.itinerary[dateIndex].locations[i])
+        //     }
+        // }
+        
+        const ind = list.itinerary[dateIndex].locations.findIndex(obj => !list.places.some(place => place.name === obj.label))
+        //returns ind = -1 if no differences
+        if (ind != -1 && list.itinerary[dateIndex].locations.length > 0) {
             //remove all instances of the option
-            console.log("options remove")
-            handleRemove(index)
+            console.log("options remove", ind)
+            //find index in itinerary
+
+            handleRemove(ind)
         }
         
     }, [list.places])
