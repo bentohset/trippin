@@ -9,7 +9,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/
 //formData.itinerary[dateIndex]: {cost:[], dateIndex, notes:[], locations:[]}
 
 function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, setData }) {
-    const [selectedItems, setSelectedItems] = useState(list.itinerary[dateIndex].locations || []);
+    const [selectedItems, setSelectedItems] = useState(list.itinerary[dateIndex].locations);
     const [options, setOptions] = useState([]);
     const [costsDraft, setCostsDraft] = useState([])
     const [openCost, setOpenCost] = useState('')
@@ -30,111 +30,22 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, set
     //when places is removed from the places to visit array
     //checks if selected items not in options, remove selected
     useEffect(() => {
-        const indx = selectedItems.findIndex(obj1 => !options.some(obj2 => obj1.value === obj2.value))
-        if (indx != -1) {
+        let index = -1
+        // index = list.itinerary[dateIndex].locations.findIndex(obj1 => !options.some(obj2 => obj1.value === obj2.value))
+        for (let i = 0; i < options.length; i++) {
+            if (!list.itinerary[dateIndex].locations.includes(options[i])) {
+                index = i
+            }
+        }
+        if (index != -1 && list.itinerary[dateIndex].locations.length && options.length > 0) {
             //remove all instances of the option
-
-            handleRemove(indx)
+            console.log("options remove")
+            handleRemove(index)
         }
         
-    }, [options])
-
-    useEffect(() => {
-        if (list.itinerary[dateIndex].locations.length > 0) {
-            setSelectedItems(list.itinerary[dateIndex].locations)
-        }
-
-    },[list.itinerary[dateIndex].locations])
+    }, [list.places])
     
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             let dev = process.env.NODE_ENV !== 'production';
-    //             const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
-    //             const response = await fetch(url, {
-    //                 method: 'GET',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 }
-    //             })
-    //             const data = await response.json()
-    //             setSelectedItems(data.locations)
-    //             setNotes(data.notes)
-    //             setCosts(data.cost)
-    //             setCostsDraft(costs)
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
-    //     return () => {
-    //         fetchData()
-    //     }
-    // }, [])
-    
-    // const autoSave = async () => {
-    //     console.log('saving')
-    //     setSaving(true)
-    //     let dev = process.env.NODE_ENV !== 'production';
-    //     const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}/${dateIndex}/itinerary`
-    //     const response = await fetch(url, {
-    //         method: 'PATCH',
-    //         body: JSON.stringify({
-    //             "notes": notes,
-    //             "location": selectedItems,
-    //             "cost": costs
-    //         }),
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         }
-    //     })
-    //     let data = await response.json()
-    //     .then(data => {
-    //         if (response.status === 200) {
-    //             setSaving(false)
-    //             setCostsDraft(costs)
-    //         } else {
-    //             console.log(response.message)
-    //         }
-    //     })
-    // }
-
-    // const debouncedSaveData = useCallback(
-    //     debounce((data) => {
-    //         autoSave(data);
-            
-    //     }, 3000), [notes, selectedItems, costs]
-    // );
-
-    // function debounce(func, delay) {
-    //     let timer;
-    //     const debounced = (...args) => {
-    //         clearTimeout(timer);
-    //         timer = setTimeout(() => {
-    //             func.apply(this, args);
-    //         }, delay);
-    //     };
-    //     debounced.cancel = () => {
-    //         clearTimeout(timer);
-    //     };
-
-    //     return debounced
-    // }
-
-    // useEffect(() => {
-    //     return () => {
-    //         debouncedSaveData.cancel();
-    //     };
-    // }, [debouncedSaveData]);
-
-    // useEffect(() => {
-    //     if (!saving) {
-    //         debouncedSaveData(notes);
-    //     }
-        
-    
-    // }, [notes, selectedItems, costs, debouncedSaveData, saving]);
-    
     const onTextAreaChange = (index, value) => {
         let editedNotes = list.itinerary[dateIndex].notes
 

@@ -45,8 +45,6 @@ function PlanPage() {
                 })
                 const data = await response.json()
                 if (response.status == 200) {
-                    console.log('fetfh')
-                    console.log(data)
                     setFormData(data)
                     setBudget(formData.totalBudget)
                     setCurrencyVal(formData.currency)
@@ -190,7 +188,6 @@ function PlanPage() {
 
     const autoSave = async () => {
         console.log("autosave")
-        console.log(formData)
         setSaving(true)
         if (!id && !formData.title) {
             console.log("autosave is nullified")
@@ -259,6 +256,10 @@ function PlanPage() {
         libraries: libraries,
     }); 
 
+    const setData = (data) => {
+        setFormData(data)
+    }
+
     //mapbox on the side https://docs.mapbox.com/mapbox-gl-js/guides/install/
     //sample yt vid https://www.youtube.com/watch?v=aAupumVpqcE
     //https://www.youtube.com/watch?v=MOqkfQIMdLE and github repo https://github.com/kukicado/building-modern-app-with-nextjs-and-mongodb
@@ -320,7 +321,7 @@ function PlanPage() {
                                             setSaving={setSaving}
                                             currency={formData.currency}
                                             updateTotal={updateTotalCost}
-                                            setData={setFormData}
+                                            setData={setData}
                                         /> }
                                     </div>
                                 ))}
