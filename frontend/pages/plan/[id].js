@@ -90,6 +90,7 @@ function PlanPage() {
             ...prevData,
             places: updatedList
         }))
+
     }
 
     const handleChange = (e) => {
@@ -188,6 +189,7 @@ function PlanPage() {
 
     const autoSave = async () => {
         console.log("autosave")
+        console.log(formData)
         setSaving(true)
         if (!id && !formData.title) {
             console.log("autosave is nullified")
@@ -302,7 +304,7 @@ function PlanPage() {
 
                         <section className="mb-10 border-b-2">
                             <h2 className="text-3xl font-bold">Places to Visit</h2>
-                            <VisitList list={formData.places} onListUpdate={handleListUpdate} isLoaded={isLoaded} />
+                            <VisitList list={formData.places} onListUpdate={handleListUpdate} isLoaded={isLoaded}/>
                         </section>
 
                         <section className="my-10">

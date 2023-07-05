@@ -91,9 +91,9 @@ exports.getTripForm = async (req, res) => {
         if (!tripForm) {
             return res.status(404).json({ error: 'Form data not found' });
         }
-        console.log("test")
-        console.log(tripForm.itinerary[0].locations)
-        console.log(tripForm.itinerary[0].notes)
+        // console.log("test")
+        // console.log(tripForm.itinerary[0].locations)
+        // console.log(tripForm.itinerary[0].notes)
         res.status(200).json(tripForm)
     } catch (error) {
         console.log(error)

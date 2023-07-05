@@ -39,18 +39,26 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, set
         //         console.log(list.itinerary[dateIndex].locations[i])
         //     }
         // }
-        
-        const ind = list.itinerary[dateIndex].locations.findIndex(obj => !list.places.some(place => place.name === obj.label))
-        //returns ind = -1 if no differences
-        if (ind != -1 && list.itinerary[dateIndex].locations.length > 0) {
-            //remove all instances of the option
-            console.log("options remove", ind)
-            //find index in itinerary
+        if (list.itinerary[dateIndex].locations) {
+            // console.log('use')
+            // console.log(list.places)
+            // console.log(list.itinerary[dateIndex].locations)
+            let ind = list.itinerary[dateIndex].locations?.findIndex(obj => !list.places.some(place => place.name === obj.label))
+            //returns ind = -1 if no differences
+            if (ind != -1 && list.itinerary[dateIndex].locations.length) {
+                //remove all instances of the option
+                console.log("options remove", ind)
+                //find index in itinerary
 
-            handleRemove(ind)
+                handleRemove(ind)
+                ind = -1
+            }
         }
         
-    }, [list.places])
+
+        
+        
+    }, [options])
     
 
     const onTextAreaChange = (index, value) => {
