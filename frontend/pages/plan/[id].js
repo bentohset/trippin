@@ -9,6 +9,8 @@ import { convertDate, convertFullDate } from "../../utils/convertDate";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import TextareaAutosize from 'react-textarea-autosize';
 import { useLoadScript } from "@react-google-maps/api";
+import { useAuth } from "../../hooks/auth";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 function PlanPage() {
     const router = useRouter();
@@ -31,6 +33,8 @@ function PlanPage() {
     const [currencyVal, setCurrencyVal] = useState('')
     const [openCurrency, setOpenCurrency] = useState(false) 
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const { cookies } = useAuth()
+    const { readById, update } = useLocalStorage("trips", [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,10 +59,21 @@ function PlanPage() {
                 console.log(error)
             }
         }
-        if (id) {
-            fetchData()
-            
+        const fetchLocalData = () => {
+            const data = readById(id)
+            setFormData(data)
+            setBudget(formData.totalBudget)
+            setCurrencyVal(formData.currency)
         }
+        if (id) {
+            if (cookies.role == "guest") {
+                fetchLocalData()
+            } else {
+                fetchData()
+            }
+        }
+        
+        
         
         
     }, [id]);
@@ -195,24 +210,36 @@ function PlanPage() {
             console.log("autosave is nullified")
             return null
         }
-        let dev = process.env.NODE_ENV !== 'production';
-        const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
-        const response = await fetch(url, {
-            method: 'PATCH',
-            body: JSON.stringify(formData),
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        let data = await response.json()
-        .then(data => {
-            if (response.status === 200) {
-                setSaving(false)
-            } else {
-                console.log(response.message)
-            }
-        })
+        if (cookies.role == "guest") {
+            console.log(id)
+            update(id, formData)
+            setSaving(false)
+            console.log("guest saved")
+            console.log(formData)
+
+        } else {
+            let dev = process.env.NODE_ENV !== 'production';
+            const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
+            const response = await fetch(url, {
+                method: 'PATCH',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            let data = await response.json()
+            .then(data => {
+                if (response.status === 200) {
+                    setSaving(false)
+                } else {
+                    console.log(response.message)
+                }
+            })
+        }
+        
     }
+
+
 
 
     const debouncedSaveData = useCallback(

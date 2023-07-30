@@ -10,14 +10,29 @@ import { useAuth } from '../hooks/auth';
 import Footer from '../components/Footer';
 import Visited from '../components/Visited';
 import Trips from '../components/Trips';
+import useLocalStorage from '../hooks/useLocalStorage';
+import GuestModal from '../components/GuestModal';
 
 
 const Home = () => {
 	const { cookies } = useAuth()
 	const [trips, setTrips]  = useState()
   const [stats, setStats] = useState([])
+  const [openModal, setOpenModal] = useState(false)
+  const { data, read } = useLocalStorage('trips', [])
 
 	const router = useRouter()
+
+  const handleModal = (x) => {
+    setIsOpen(x)
+  }
+
+  useEffect(()=> {
+    if (cookies.role === "guest") {
+      setOpenModal(true)
+    }
+    
+  },[])
   
 	useEffect(() => {
 		const fetchData = async () => {
@@ -42,10 +57,22 @@ const Home = () => {
 			}
 		}
 
-		fetchData()
+    const fetchLocalData = async () => {
+      setTrips(data)
+      setStats(getStats(data))
+    }
+
+    if (cookies.role == "guest") {
+      console.log("guest")
+      fetchLocalData()
+      console.log(trips)
+    } else {
+      fetchData()
+    }
+		
 
 		
-	}, [])
+	}, [cookies.role])
 
   //returns an array of objects: {countryCode:string(lowercase), freq: integer}
   const getStats = (tripArr) => {
@@ -105,6 +132,7 @@ const Home = () => {
 
       </main>
       <Footer/>
+      <GuestModal isOpen={openModal} setIsOpen={setOpenModal}/>
     </div>
   )
 }

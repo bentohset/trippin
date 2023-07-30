@@ -3,12 +3,13 @@ import { Bars3Icon, UserCircleIcon, } from '@heroicons/react/24/solid'
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '../hooks/auth';
+import { FaPassport } from 'react-icons/fa';
 
 function Header() {
     const [isOpen, setIsOpen] = useState(false);
     const modalRef = useRef(null);
     const router = useRouter()
-    const { logout } = useAuth()
+    const { logout, cookies } = useAuth()
 
     const toggleModal = () => {
         setIsOpen((current) => !current);
@@ -18,7 +19,6 @@ function Header() {
             setIsOpen(false);
         }
     };
-    
     useEffect(() => {
         if (isOpen) {
             document.addEventListener('click', handleClickOutside);
@@ -55,7 +55,8 @@ function Header() {
                 {isOpen && (
                 <div ref={modalRef} className="absolute flex flex-col top-16 md:right-10 right-4 w-36 z-50 bg-white rounded-xl shadow-xl border-[1px]">
                     <button className="text-gray-600 py-1 w-full mt-3 hover:bg-gray-100" onClick={()=>{router.replace('/profile')}}>Profile</button>
-                    <button className="text-gray-600 py-1 w-full mb-3 hover:bg-gray-100" onClick={()=>{logout()}}>Logout</button>
+                    <button className="text-gray-600 py-1 w-full mb-1 hover:bg-gray-100" onClick={()=>{logout()}}>Logout</button>
+                    {cookies.role === "guest" && <p className='text-gray-500 py-1 w-full mb-2 text-center text-xs'>Guest Mode</p>}
                 </div>
             )}
             </div>

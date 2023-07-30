@@ -10,8 +10,17 @@ function login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false)
-    const { login } = useAuth();
+    const { login, guestLogin } = useAuth();
     const router = useRouter()
+
+    const loginGuest = async () => {
+        console.log('login guest')
+        const res = await guestLogin()
+
+        if (res == "Success") {
+            router.replace('/')
+        }
+    }
 
     const submitForm = async (e) => {
         e.preventDefault();
@@ -19,8 +28,9 @@ function login() {
             return setError('All fields are required')
         }
         //handle error cases
-        const res = await login({email, password});
         setLoading(true)
+        const res = await login({email, password});
+        
         if (res === "Success") {
             router.replace('/')
         } else {
@@ -75,6 +85,9 @@ function login() {
             </div>
             <button className="hover:text-black text-gray-600" onClick={()=>{router.replace('/register')}}>
                 Don't have an account yet? <span className='font-semibold'>Sign up here</span>
+            </button>
+            <button className='hover:text-black hover:underline text-gray-700 mt-4' onClick={()=>{loginGuest()}}>
+                Login as Guest
             </button>
             </div>
         </main>

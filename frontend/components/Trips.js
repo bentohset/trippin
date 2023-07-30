@@ -1,9 +1,11 @@
 import React from 'react'
 import SmallCard from './SmallCard'
 import { useAuth } from "../hooks/auth";
+import useLocalStorage from '../hooks/useLocalStorage';
 
 function Trips({ trips, setTrips, decreaseStat }) {
   const { cookies } = useAuth()
+  const { remove } = useLocalStorage('trips', [])
   const convertDate = (date) => {
 		const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -41,6 +43,12 @@ function Trips({ trips, setTrips, decreaseStat }) {
           }
         })
     }
+
+    const handleDeleteTripGuest = (id, countryCode) => {
+      remove(id)
+      setTrips(prevTrips => prevTrips.filter(tripObj => tripObj._id !== id))
+      decreaseStat(countryCode)
+    }
     
   return (
     <section className='pt-6'>
@@ -57,7 +65,7 @@ function Trips({ trips, setTrips, decreaseStat }) {
                 year={getYear(startDate)}
                 title={title}
                 countryCode={countryCode}
-                handleDeleteTrip={handleDeleteTrip}
+                handleDeleteTrip={cookies.role=="guest"?handleDeleteTripGuest:handleDeleteTrip}
             />
 
         ))

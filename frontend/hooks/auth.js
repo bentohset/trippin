@@ -9,6 +9,15 @@ export const AuthProvider = ({ children }) => {
     const [cookies, setCookies, removeCookie] = useCookies();
     const router = useRouter()
 
+	const guestLogin = async () => {
+		setCookies('role', 'guest', { path: '/', sameSite: 'none', secure: true})
+		setCookies('token', 'guestMode', { path: '/', sameSite: 'none', secure: true});
+		setCookies('id', '1', { path: '/', sameSite: 'none', secure: true});
+		
+		return "Success"
+
+	}
+
     const login = async ({ email, password }) => {
       	let dev = process.env.NODE_ENV !== 'production';
 		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/auth/signin`
@@ -38,6 +47,7 @@ export const AuthProvider = ({ children }) => {
 		if (data.token && data.user._id) {
 			setCookies('token', data.token, { path: '/', sameSite: 'none', secure: true});
 			setCookies('id', data.user._id, { path: '/', sameSite: 'none', secure: true});
+			setCookies('role', 'user', { path: '/', sameSite: 'none', secure: true})
 			return "Success"
 		}
 		
@@ -74,6 +84,7 @@ export const AuthProvider = ({ children }) => {
 		if (data.token && data.user._id) {
 			setCookies('token', data.token, { path: '/', sameSite: 'none', secure: true});
 			setCookies('id', data.user._id, { path: '/', sameSite: 'none', secure: true});
+			setCookies('role', 'user', { path: '/', sameSite: 'none', secure: true})
 			return "Success"
 		}
 	}
@@ -86,6 +97,7 @@ export const AuthProvider = ({ children }) => {
 	const value = useMemo(
 		() => ({
 			cookies,
+			guestLogin,
 			login,
 			register,
 			logout

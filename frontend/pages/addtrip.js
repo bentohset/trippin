@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../hooks/auth';
 import { useMediaQuery } from '@mui/material';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 function Addtrip() {
     const isMobile = useMediaQuery('(max-width:992px)');
@@ -23,6 +24,7 @@ function Addtrip() {
     const [autocompleteLocations, setAutocompleteLocations] = useState([]);
     const [openAutocomplete, setOpenAutocomplete] = useState(false)
     const { cookies } = useAuth()
+    const { create } = useLocalStorage('trips', [])
     const router = useRouter()
     // const autoRef = useRef(null);
 
@@ -125,6 +127,39 @@ function Addtrip() {
         })
     }
 
+    const submitFormGuest = (e) => {
+        e.preventDefault();
+        if (!location.text || !location.center || !startDate || !endDate) return setError('All fields are required');
+        const size = Math.ceil((endDate-startDate)/(1000*60*60*24))
+        const arr = new Array(size+1).fill().map((_,index) => ({
+            dateIndex: index,
+            locations:[],
+            notes: [],
+            cost: []
+        }))
+
+        const trip = {
+            _id: Date.now(),
+            location: location.text,
+            center: location.center,
+            countryCode: location.countryCode,
+            startDate,
+            endDate,
+            title: "Trip to " + location.text,
+            places: [],
+            totalBudget: 0,
+            currency: "$",
+            createdAt: new Date(),
+            itinerary: arr,
+            notes: ""
+        };
+
+        create(trip)
+        console.log(trip)
+        router.replace(`/plan/${trip._id}`)
+    }
+
+
   return (
     <div className='bg-white'>
         <Header/>
@@ -141,7 +176,7 @@ function Addtrip() {
             ):null}
             <h1 className='font-bold text-4xl m-4 mt-8 text-center'>New trip</h1>
             <div className=''>
-                <form className='flex flex-col relative' onSubmit={submitForm}>
+                <form className='flex flex-col relative' onSubmit={cookies.role=="guest"?submitFormGuest : submitForm}>
                     <label htmlFor="location" className='my-2 font-semibold'>Place</label>
                     <input 
                         type="text" 

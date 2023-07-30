@@ -3,27 +3,33 @@ import { useAuth } from "../hooks/auth";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 
 function ProfileCard({ initialUser, setUser, user}) {
-    const { cookies } = useAuth()
-    const [username, setUsername] = useState(initialUser.username)
+  const { cookies } = useAuth()
+  const [username, setUsername] = useState(initialUser.username)
 	const [openEdit, setOpenEdit] = useState(false)
 	const [save, setSave] = useState(false)
 
     useEffect(() => {
-		updateProfile()
-		setSave(false)
+      console.log(save)
+      if (cookies.role == "guest") {
+
+      } else {
+        updateProfile()
+      }
+      
+      setSave(false)
     }, [save]);
 
     const updateProfile = async () => {
-		let dev = process.env.NODE_ENV !== 'production';
-		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/${cookies.id}`
-		const response = await fetch(url, {
-			body: JSON.stringify(user),
-			method: 'PATCH',
-			headers: {
-			'Content-Type': 'application/json',
-			}
-		})
-		const data = await response.json()
+      let dev = process.env.NODE_ENV !== 'production';
+      const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/${cookies.id}`
+      const response = await fetch(url, {
+        body: JSON.stringify(user),
+        method: 'PATCH',
+        headers: {
+        'Content-Type': 'application/json',
+        }
+      })
+      const data = await response.json()
     }
 
     const handleOpenEdit = () => {
@@ -79,11 +85,12 @@ function ProfileCard({ initialUser, setUser, user}) {
                 placeholder='Username'
                 value={username}
                 onChange={(e)=>{setUsername(e.target.value)}}
+                disabled={cookies.role === "guest"}
             />
             </DialogContent>
             <DialogActions>
             <Button onClick={()=>{handleCloseEdit()}}>Cancel</Button>
-            <Button onClick={()=>{handleSaveEdit()}}>Save</Button>
+            <Button onClick={()=>{handleSaveEdit()}} disabled={cookies.role==="guest"}>Save</Button>
             </DialogActions>
         </Dialog>
     </div>
