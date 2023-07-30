@@ -20,6 +20,7 @@ const Home = () => {
   const [stats, setStats] = useState([])
   const [openModal, setOpenModal] = useState(false)
   const { data, read } = useLocalStorage('trips', [])
+  const { data:isDismissed , toggleTrue: toggleDismissed } = useLocalStorage('guestDismiss', false)
 
 	const router = useRouter()
 
@@ -27,8 +28,12 @@ const Home = () => {
     setIsOpen(x)
   }
 
+  const setDismissed = () => {
+    toggleDismissed()
+  }
+
   useEffect(()=> {
-    if (cookies.role === "guest") {
+    if (cookies.role === "guest" && !isDismissed) {
       setOpenModal(true)
     }
     
@@ -132,7 +137,7 @@ const Home = () => {
 
       </main>
       <Footer/>
-      <GuestModal isOpen={openModal} setIsOpen={setOpenModal}/>
+      <GuestModal isOpen={openModal} setIsOpen={setOpenModal} toggle={toggleDismissed}/>
     </div>
   )
 }

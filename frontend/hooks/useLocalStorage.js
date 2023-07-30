@@ -54,6 +54,10 @@ function useLocalStorage(key, initialData) {
     });
   };
 
+  const toggleTrue = () => {
+    setData(true)
+  }
+
   const remove = (id) => {
     setData((prevData) => {
       const updatedData = prevData.filter((item) => item._id !== id);
@@ -61,7 +65,7 @@ function useLocalStorage(key, initialData) {
     });
   };
 
-  return { data, create, read, update, remove, readById };
+  return { data, create, read, update, remove, readById, toggleTrue };
 }
 
 export default useLocalStorage

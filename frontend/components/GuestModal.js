@@ -1,9 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 
-export default function GuestModal({isOpen, setIsOpen}) {
+export default function GuestModal({isOpen, setIsOpen, toggle}) {
 
   function closeModal() {
+    toggle()
     setIsOpen(false)
   }
 
@@ -43,7 +44,7 @@ export default function GuestModal({isOpen, setIsOpen}) {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Guest Mode
+                    Guest Mode Warning
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 text-left">
