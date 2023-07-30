@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <title>Trippin</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/passport-solid.svg" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <body>
