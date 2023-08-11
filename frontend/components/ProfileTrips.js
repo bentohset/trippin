@@ -12,10 +12,10 @@ function ProfileTrips({ trips, setTrips, setUser }) {
 
 		const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/user/${id}/${cookies.id}`
 		const response = await fetch(url, {
-		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-		} 
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+			} 
 		})
 
 		const data = await response.json()
