@@ -44,7 +44,6 @@ exports.createTrip = async (req, res) => {
 
     try {
         const createdTrip = await newTrip.save()
-        console.log(createdTrip)
         //add createdTrip._id to user
         res.status(201).json(createdTrip);
     } catch (error) {

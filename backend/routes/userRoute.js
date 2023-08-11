@@ -1,6 +1,6 @@
 const express = require('express')
 const auth = require('../middleware/auth.js')
-const { getTripsByUser, createTripUser, deleteTripUser, getUser, updateUser } = require('../controllers/userController.js')
+const { getTripsByUser, createTripUser, deleteTripUser, getUser, updateUser, addTripUser } = require('../controllers/userController.js')
 
 const router = express.Router()
 
@@ -16,5 +16,8 @@ router.delete('/:trip/:id', deleteTripUser)
 router.get('/:id', getUser)
 
 router.patch('/:id', updateUser)
+
+// @route /user/trip/add/:id
+router.post('/trip/add/:id', addTripUser)
 
 module.exports = router

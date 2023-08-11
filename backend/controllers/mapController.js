@@ -32,11 +32,8 @@ exports.autoCompletePlaces = async (req, res) => {
     const maxLat = lat + 10
     const minLong = long - 10
     const maxLong = long + 10
-    console.log(text)
-    console.log(long)
-    console.log(lat)
+
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?proximity=${long},${lat}&bbox=${minLong},${minLat},${maxLong},${maxLat}&access_token=${mapboxKey}&autocomplete=true&types=poi`
-    console.log(url)
     try {
         const resp = await fetch(url);
         const data = await resp.json()
