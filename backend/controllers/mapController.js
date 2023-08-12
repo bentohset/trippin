@@ -13,7 +13,6 @@ exports.autoCompleteCity = async (req, res) => {
     try {
         const resp = await fetch(url);
         const data = await resp.json()
-        console.log(data)
         if (resp.ok) {
             res.status(200).json(data)
         } else {
