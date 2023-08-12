@@ -167,6 +167,7 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, set
     //close and save cost
     const handleCostSave = (index) => {
         if (costsDraft[index] === '') {
+            // if cost is set to 0 or empty
 
             let itineraryObj = list.itinerary[dateIndex]
 
@@ -183,25 +184,37 @@ function Itinerary({ id, dateIndex, list, setSaving, currency,  updateTotal, set
                 itinerary: newArray
             }))
             updateTotal(0, currentCost.current)
+            setOpenCost('');
+            setCostsDraft(0)
         } else {
+            // if cost has actual value
+
+            //access the intinerary at that date
             let itineraryObj = list.itinerary[dateIndex]
 
+            //assign the new cost to the itinerary
             itineraryObj.cost[index] = costsDraft[index]
 
+            //insert into the normal array
             const newArray = [
                 ...list.itinerary.splice(0, dateIndex),
                 itineraryObj,
                 ...list.itinerary.splice(dateIndex+1),
             ]
-
+            const updatedItinerary = new Array(newArray.length).fill({}).map((item, index) => {
+                return newArray[index] || item;
+            });
+            //re-set the formdata itinerary with the new array
+            //BUG is here
             setData((prev) => ({
                 ...prev,
-                itinerary: newArray
+                itinerary: updatedItinerary
             }))
             updateTotal(parseInt(costsDraft[index]), currentCost.current)
+            setOpenCost('');
         }
-        setOpenCost('');
-        setCostsDraft(list.itinerary[dateIndex].cost)
+        // setOpenCost('');
+        // setCostsDraft(list.itinerary[dateIndex].cost)
     }
 
     const handleCostsDraftChange = (index, value) => {
