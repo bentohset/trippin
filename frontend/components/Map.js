@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { GoogleMap, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
-function Map({ clat, clng, places, isLoaded }) {
+function Map({ clat, clng, places, isLoaded}) {
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [infoWindowData, setInfoWindowData] = useState();
@@ -24,7 +24,7 @@ function Map({ clat, clng, places, isLoaded }) {
   
 
   const onMapLoad = (map) => {
-    console.log('map loading............')
+    // console.log('map loading............')
     setMapRef(map);
     const bounds = new google.maps.LatLngBounds();
     if (places.length !== 0) {
