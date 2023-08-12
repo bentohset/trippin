@@ -11,6 +11,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { useLoadScript } from "@react-google-maps/api";
 import { useAuth } from "../../hooks/auth";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import { socket } from "../../hooks/socket";
 
 function PlanPage() {
     const router = useRouter();
@@ -76,7 +77,7 @@ function PlanPage() {
         
         
         
-    }, [id]);
+    }, [id, cookies.id]);
 
     useEffect(() => {
         let total = 0
@@ -162,7 +163,6 @@ function PlanPage() {
             }))
         }
         setOpenBudget(false);
-        autoSave()
     }
 
     const handleOpenCurrency = () => {
@@ -174,6 +174,8 @@ function PlanPage() {
         setCurrencyVal(formData.currency)
         setOpenCurrency(false)
     }
+
+    const [emitCurrency, setEmitCurrency] = useState(false)
 
     const handleSaveCurrency = () => {
         if (currencyVal === '') {
@@ -189,7 +191,6 @@ function PlanPage() {
             }))
         }
         setOpenCurrency(false)
-        autoSave()
     }
 
     const updateTotalCost = (newVal, old) => {
@@ -201,51 +202,108 @@ function PlanPage() {
         
     }
     
+    // TODO: move saving to server side
 
     const autoSave = async () => {
-        console.log("autosave")
-        console.log(formData)
         setSaving(true)
-        if (!id && !formData.title) {
-            console.log("autosave is nullified")
-            return null
-        }
+        // if (!id && !formData.title) {
+        //     console.log("autosave is nullified")
+        //     return null
+        // }
         if (cookies.role == "guest") {
-            console.log(id)
             update(id, formData)
             setSaving(false)
-            console.log("guest saved")
-            console.log(formData)
 
         } else {
-            let dev = process.env.NODE_ENV !== 'production';
-            const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
-            const response = await fetch(url, {
-                method: 'PATCH',
-                body: JSON.stringify(formData),
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            let data = await response.json()
-            .then(data => {
-                if (response.status === 200) {
-                    setSaving(false)
-                } else {
-                    console.log(response.message)
-                }
-            })
+            // let dev = process.env.NODE_ENV !== 'production';
+            // const url = `${dev ? process.env.NEXT_PUBLIC_DEV_API_URL : process.env.NEXT_PUBLIC_PROD_API_URL}/trips/${id}`
+            // const response = await fetch(url, {
+            //     method: 'PATCH',
+            //     body: JSON.stringify(formData),
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     }
+            // })
+            // let data = await response.json()
+            // .then(data => {
+            //     if (response.status === 200) {
+            //         setSaving(false)
+            //     } else {
+            //         console.log(response.message)
+            //     }
+            // })
         }
         
     }
 
 
+    const [isReceiving, setIsReceiving] = useState(false)
+    const [isTyping, setIsTyping] = useState(false);
+    
 
+    useEffect(() => {
+        if (id && cookies.id) {
+            socket.emit('joinTrip', { tripId: id, userId: cookies.id });
+            window.addEventListener('keydown', handleKeyDown)
+            window.addEventListener('keyup', handleKeyUp)
+            window.addEventListener('mouseup', handleKeyDown);
+            window.addEventListener('mousedown', handleKeyUp);
+        }
+        
+        return () => {
+            if (id && cookies.id) {
+                socket.emit('leaveTrip', { tripId: id, userId: cookies.id });
+                window.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('keyup', handleKeyUp);
+                window.removeEventListener('mouseup', handleKeyDown);
+                window.removeEventListener('mousedown', handleKeyUp);
+            }
+        };
+    }, [cookies.id, id]);
 
-    const debouncedSaveData = useCallback(
+    const handleKeyDown = () => {
+        setIsTyping(true); // Set the flag when a key is pressed
+    };
+    
+    const handleKeyUp = () => {
+        setIsTyping(false); // Reset the flag when the key is released
+    };
+
+    useEffect(() => {
+        // Listen for updates from the socket
+        socket.on('updateData', (updatedData) => {
+            setFormData((prevData) => ({
+                ...prevData,
+                ...updatedData,
+            }));
+        });
+    
+        // Clean up the listener when the component unmounts
+        return () => {
+          socket.off('updateData');
+        };
+    }, []);
+
+    useEffect(() => {
+        // Emit update to the socket whenever formData changes
+        if (isInitialLoad) {
+            setIsInitialLoad(false)
+            return;
+        }
+        if (isTyping) {
+            emitUpdate(formData);
+        }
+
+        return () => {
+            emitUpdate.cancel();
+        };
+    }, [formData]);
+
+    const emitUpdate = useCallback(
         debounce((data) => {
-            autoSave(data);
-        }, 3000), [formData]
+          socket.emit('updateData', { tripId: id, userId: cookies.id, updatedData: data });
+        }, 500),
+        [id, cookies.id]
     );
 
     function debounce(func, delay) {
@@ -262,22 +320,30 @@ function PlanPage() {
 
         return debounced
     }
-    useEffect(() => {
-        return () => {
-            debouncedSaveData.cancel();
-        };
-    }, [debouncedSaveData]);
+
+    const debouncedSaveData = useCallback(
+        debounce((data) => {
+            autoSave(data);
+    }, 3000), [formData]
+    )
 
     useEffect(() => {
+        if (cookies.role !== "guest") {
+            return;
+        }
         if (!isInitialLoad) {
+            // emitUpdate(formData)
             debouncedSaveData(formData);
         } else {
-            console.log('first load')
             setIsInitialLoad(false)
+            
         }
-        
+        return () => {
+            debouncedSaveData.cancel();
+            // emitUpdate.cancel()
+        };
     
-    }, [formData, debouncedSaveData, isInitialLoad]);
+    }, [formData, debouncedSaveData, isInitialLoad, cookies.role]);
 
     const libraries = useMemo(() => ['places'], []);
     const { isLoaded } = useLoadScript({
@@ -285,9 +351,6 @@ function PlanPage() {
         libraries: libraries,
     }); 
 
-    const setData = (data) => {
-        setFormData(data)
-    }
 
     //mapbox on the side https://docs.mapbox.com/mapbox-gl-js/guides/install/
     //sample yt vid https://www.youtube.com/watch?v=aAupumVpqcE
@@ -350,7 +413,7 @@ function PlanPage() {
                                             setSaving={setSaving}
                                             currency={formData.currency}
                                             updateTotal={updateTotalCost}
-                                            setData={setData}
+                                            setData={setFormData}
                                         /> }
                                     </div>
                                 ))}
