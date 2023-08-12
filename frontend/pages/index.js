@@ -1,9 +1,6 @@
-import Head from 'next/head'
 import { useRouter } from 'next/router';
 import Header from '../components/Header'
 import Banner from '../components/Banner'
-import SmallCard from '../components/SmallCard'
-
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/auth';
@@ -12,7 +9,6 @@ import Visited from '../components/Visited';
 import Trips from '../components/Trips';
 import useLocalStorage from '../hooks/useLocalStorage';
 import GuestModal from '../components/GuestModal';
-
 
 const Home = () => {
 	const { cookies } = useAuth()
