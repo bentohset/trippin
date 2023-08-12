@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const Trip = require('../models/TripModel')
+const { saveTrip } = require('../utils')
 
 exports.getTrip = async (req, res) => {
     const { id } = req.params;
@@ -56,13 +57,19 @@ exports.updateTrip = async (req, res) => {
     const { id: _id } = req.params
     const trip = req.body
 
-    if (!mongoose.Types.ObjectId.isValid(_id)) {
+    // if (!mongoose.Types.ObjectId.isValid(_id)) {
+    //     return res.status(404).end('id does not exist')
+    // }
+
+    // const updatedTrip = await Trip.findByIdAndUpdate(_id, {...trip, _id}, { new: true})
+    // console.log("trip updated!")
+    // res.status(200).json(updatedTrip)
+    try {
+        const updatedTrip = await saveTrip(id, trip);
+        res.status(200).json(updatedTrip)
+    } catch (error) {
         return res.status(404).end('id does not exist')
     }
-
-    const updatedTrip = await Trip.findByIdAndUpdate(_id, {...trip, _id}, { new: true})
-
-    res.status(200).json(updatedTrip)
 }
 
 exports.deleteTrip = async (req, res) => {

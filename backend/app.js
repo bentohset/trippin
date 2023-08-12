@@ -1,6 +1,8 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors')
+const http = require("http");
+const { configureSocket } = require('./socket')
 
 //routes
 const tripRoutes = require('./routes/tripRoute')
@@ -9,6 +11,8 @@ const userRoutes = require('./routes/userRoute')
 const mapRoutes = require('./routes/mapRoute')
 
 const app = express();
+const server = http.createServer(app);
+const io = configureSocket(server)
 
 //cors
 app.use(cors({ origin: true, credentials: true }));
@@ -25,7 +29,7 @@ const port = process.env.PORT || 8082
 const startServer = async () => {
     try {
         connectDB();
-        app.listen(port, () => console.log(`Server running on port http://localhost:${port}`));
+        server.listen(port, () => console.log(`Server running on port http://localhost:${port}`));
         app.get('/', (erq, res) => res.send("hello backend!"));
     } catch (error) {
         console.log(error)
